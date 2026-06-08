@@ -5,10 +5,11 @@ import { SafeAreaView } from "@/components/tw";
 import { fonts } from "@/utils/fonts";
 import { useHistory } from "@/utils/search-history";
 import { cn } from "@/utils/tailwind";
+import { type ThemePreference, useThemePreference } from "@/utils/theme";
 import type { Href } from "expo-router";
 import { usePathname } from "expo-router";
 
-import { BookOpen, Clock, Search } from "lucide-react-native";
+import { BookOpen, Clock, Moon, Search, Sun, SunMoon } from "lucide-react-native";
 import React, { createContext, use, useCallback, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
@@ -109,6 +110,60 @@ function DrawerHistoryItem({
   );
 }
 
+const APPEARANCE_OPTIONS: {
+  value: ThemePreference;
+  label: string;
+  icon: typeof Sun;
+}[] = [
+  { value: "system", label: "System", icon: SunMoon },
+  { value: "light", label: "Light", icon: Sun },
+  { value: "dark", label: "Dark", icon: Moon },
+];
+
+/** Segmented control for the light / dark / system appearance preference. */
+function AppearanceToggle() {
+  const { preference, setPreference } = useThemePreference();
+
+  return (
+    <View className="flex-row gap-1 rounded-xl bg-muted p-1 border-continuous">
+      {APPEARANCE_OPTIONS.map((option) => {
+        const active = preference === option.value;
+        return (
+          <Pressable
+            key={option.value}
+            onPress={() => setPreference(option.value)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: active }}
+            accessibilityLabel={`${option.label} appearance`}
+            className={cn(
+              "flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2",
+              active ? "bg-card shadow-card" : "active:opacity-60",
+            )}
+          >
+            <Icon
+              icon={option.icon}
+              className={cn(
+                "w-4 h-4",
+                active ? "text-foreground" : "text-muted-foreground",
+              )}
+            />
+            <Text
+              className={cn(
+                "text-[13px]",
+                active
+                  ? "font-semibold text-foreground"
+                  : "text-muted-foreground",
+              )}
+            >
+              {option.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 export function DrawerContent({
   onNavigate,
 }: {
@@ -176,6 +231,14 @@ export function DrawerContent({
           ))
         )}
       </ScrollView>
+
+      {/* Appearance */}
+      <View className="px-4 pt-3">
+        <Text className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2 px-1">
+          Appearance
+        </Text>
+        <AppearanceToggle />
+      </View>
     </SafeAreaView>
   );
 }

@@ -28,6 +28,7 @@ import { SafeAreaListener } from "react-native-safe-area-context";
 import { Uniwind, useCSSVariable } from "uniwind";
 
 import { HistoryProvider } from "@/utils/search-history";
+import { ThemePreferenceProvider } from "@/utils/theme";
 import { useSystemBackgroundColor } from "@/utils/use-system-background-color";
 
 const GLASS = isLiquidGlassAvailable();
@@ -66,16 +67,18 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <ThemeProvider>
-      <KeyboardProvider>
-        <HistoryProvider>
-          <DrawerProvider>
-            <RootDrawer />
-          </DrawerProvider>
-        </HistoryProvider>
-        {process.env.EXPO_OS !== "ios" && <StatusBar style="auto" />}
-      </KeyboardProvider>
-    </ThemeProvider>
+    <ThemePreferenceProvider>
+      <ThemeProvider>
+        <KeyboardProvider>
+          <HistoryProvider>
+            <DrawerProvider>
+              <RootDrawer />
+            </DrawerProvider>
+          </HistoryProvider>
+          {process.env.EXPO_OS !== "ios" && <StatusBar style="auto" />}
+        </KeyboardProvider>
+      </ThemeProvider>
+    </ThemePreferenceProvider>
   );
 }
 
