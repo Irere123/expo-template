@@ -43,9 +43,9 @@ export function AudioButton({ url, label }: { url: string; label: string }) {
 
   if (failed) {
     return (
-      <View className="flex-row items-center gap-2 rounded-full bg-muted px-3.5 py-2 opacity-60 border-continuous">
+      <View className="flex-row items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 opacity-60 border-continuous">
         <Icon icon={Volume2} className="w-4 h-4 text-muted-foreground" />
-        <Text className="text-[13px] text-muted-foreground">
+        <Text className="text-sm text-muted-foreground">
           {label} unavailable
         </Text>
       </View>
@@ -57,13 +57,13 @@ export function AudioButton({ url, label }: { url: string; label: string }) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`Play ${label} pronunciation`}
-      className="flex-row items-center gap-2 rounded-full bg-secondary px-3.5 py-2 active:opacity-60 border-continuous"
+      className="flex-row items-center gap-1.5 rounded-full bg-secondary px-3.5 py-1.5 active:opacity-60 border-continuous"
     >
       <Icon
         icon={isPlaying ? Pause : Volume2}
         className="w-4 h-4 text-foreground"
       />
-      <Text className="text-[13px] font-medium text-foreground">{label}</Text>
+      <Text className="text-sm font-medium text-foreground">{label}</Text>
     </Pressable>
   );
 }

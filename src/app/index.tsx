@@ -1,5 +1,11 @@
 import { useRouter } from "expo-router";
-import { BookOpenText, ChevronRight, Clock, Search } from "lucide-react-native";
+import {
+  BookOpenText,
+  ChevronRight,
+  Clock,
+  Search,
+  Sparkles,
+} from "lucide-react-native";
 import { useState } from "react";
 import {
   Keyboard,
@@ -12,6 +18,7 @@ import {
 
 import { Icon } from "@/components/icon";
 import { MainHeader } from "@/components/main-header";
+import { getWordOfTheDay } from "@/utils/dictionary-api";
 import { useHistory } from "@/utils/search-history";
 
 export default function SearchScreen() {
@@ -19,6 +26,8 @@ export default function SearchScreen() {
   const { history, clearHistory } = useHistory();
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const wotd = getWordOfTheDay();
 
   const openWord = (raw: string) => {
     const word = raw.trim().toLowerCase();
@@ -47,22 +56,21 @@ export default function SearchScreen() {
       >
         {/* Hero */}
         <View className="px-5 pt-4 pb-5">
-          <View className="w-12 h-12 rounded-2xl bg-foreground items-center justify-center mb-4 border-continuous">
-            <Icon icon={BookOpenText} className="w-6 h-6 text-background" />
+          <View className="w-12 h-12 rounded-2xl bg-secondary items-center justify-center mb-4 border-continuous">
+            <Icon icon={BookOpenText} className="w-6 h-6 text-foreground" />
           </View>
-          <Text className="text-[28px] font-bold text-foreground">
+          <Text className="text-[34px] font-bold tracking-tight text-foreground leading-tight">
             Dictionary
           </Text>
-          <Text className="text-[17px] text-muted-foreground mt-1 leading-snug">
-            Search any English word for meanings, pronunciations, and example
-            sentences.
+          <Text className="text-[15px] text-muted-foreground mt-2 leading-snug">
+            Look up any word for meanings, pronunciation, and examples.
           </Text>
         </View>
 
         {/* Search box */}
         <View className="px-5">
-          <View className="flex-row items-center gap-2 rounded-xl bg-muted px-3 py-2.5 border-continuous">
-            <Icon icon={Search} className="h-4 w-4 text-muted-foreground" />
+          <View className="flex-row items-center gap-3 h-[52px] rounded-full bg-secondary px-4 border-continuous">
+            <Icon icon={Search} className="h-5 w-5 text-muted-foreground" />
             <TextInput
               value={query}
               onChangeText={(text) => {
@@ -89,7 +97,7 @@ export default function SearchScreen() {
           <Pressable
             onPress={submit}
             accessibilityRole="button"
-            className="bg-foreground rounded-xl mt-3 py-3.5 items-center active:opacity-80 border-continuous"
+            className="bg-foreground rounded-2xl mt-3 h-[52px] items-center justify-center active:opacity-80 border-continuous"
           >
             <Text className="text-[17px] font-semibold text-background">
               Search
@@ -98,48 +106,80 @@ export default function SearchScreen() {
         </View>
 
         {/* Recent searches */}
-        {history.length > 0 ? (
-          <View className="mt-8">
-            <View className="flex-row items-center justify-between px-5 pb-2">
-              <Text className="text-[13px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Recent searches
-              </Text>
+        <View className="mt-9">
+          <View className="flex-row items-center justify-between px-5 mb-1">
+            <Text className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Recent searches
+            </Text>
+            {history.length > 0 && (
               <Pressable
                 onPress={clearHistory}
                 accessibilityRole="button"
+                hitSlop={8}
                 className="active:opacity-60"
               >
-                <Text className="text-[13px] text-muted-foreground">Clear</Text>
+                <Text className="text-sm font-medium text-foreground">
+                  Clear
+                </Text>
               </Pressable>
-            </View>
-            {history.map((word) => (
+            )}
+          </View>
+
+          {history.length > 0 ? (
+            history.map((word) => (
               <Pressable
                 key={word}
                 onPress={() => openWord(word)}
-                className="flex-row items-center px-5 py-3.5 gap-3.5 active:bg-muted"
+                accessibilityRole="button"
+                className="flex-row items-center px-5 py-4 gap-3 border-b border-border active:bg-muted"
               >
-                <Icon icon={Clock} className="w-4 h-4 text-muted-foreground" />
+                <Icon icon={Clock} className="w-[18px] h-[18px] text-muted-foreground" />
                 <Text
                   numberOfLines={1}
-                  className="flex-1 text-[17px] text-foreground capitalize"
+                  className="flex-1 text-[17px] font-medium text-foreground capitalize"
                 >
                   {word}
                 </Text>
                 <Icon
                   icon={ChevronRight}
-                  className="w-3.5 h-3.5 text-muted-foreground"
+                  className="w-[18px] h-[18px] text-muted-foreground"
                 />
               </Pressable>
-            ))}
-          </View>
-        ) : (
-          <View className="items-center px-10 pt-16 gap-2">
-            <Icon icon={Search} className="w-9 h-9 text-muted-foreground" />
-            <Text className="text-[15px] text-muted-foreground text-center">
-              Your searched words will appear here.
+            ))
+          ) : (
+            <Text className="text-[15px] text-muted-foreground px-5 pt-1">
+              Words you look up will show here. Try one below to get started.
+            </Text>
+          )}
+        </View>
+
+        {/* Word of the day */}
+        <View className="mt-9 px-5">
+          <View className="flex-row items-center gap-2 mb-3">
+            <Icon icon={Sparkles} className="w-3.5 h-3.5 text-muted-foreground" />
+            <Text className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Word of the day
             </Text>
           </View>
-        )}
+          <Pressable
+            onPress={() => openWord(wotd.word)}
+            accessibilityRole="button"
+            accessibilityLabel={`Word of the day: ${wotd.word}`}
+            className="rounded-2xl bg-secondary px-5 py-5 active:opacity-70 border-continuous"
+          >
+            <View className="flex-row items-baseline gap-2">
+              <Text className="text-[22px] font-bold tracking-tight text-foreground capitalize">
+                {wotd.word}
+              </Text>
+              <Text className="text-sm italic text-muted-foreground">
+                {wotd.partOfSpeech}
+              </Text>
+            </View>
+            <Text className="text-sm text-muted-foreground mt-2 leading-relaxed">
+              {wotd.gloss}
+            </Text>
+          </Pressable>
+        </View>
       </ScrollView>
 
       <MainHeader />

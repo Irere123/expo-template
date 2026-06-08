@@ -1,3 +1,9 @@
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { FileQuestion, RotateCw, SearchX, WifiOff } from "lucide-react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { AudioButton } from "@/components/audio-button";
 import { Icon } from "@/components/icon";
 import {
@@ -5,19 +11,10 @@ import {
   fetchWord,
   getPhoneticText,
   getPronunciations,
+  suggestWords,
   type WordEntry,
 } from "@/utils/dictionary-api";
 import { useHistory } from "@/utils/search-history";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { FileQuestion, RotateCw, WifiOff } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
 
 type State =
   | { status: "loading" }
@@ -28,7 +25,7 @@ export default function WordScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ word: string }>();
   const word = (params.word ?? "").trim();
-  const { addWord } = useHistory();
+  const { addWord, history } = useHistory();
 
   const [state, setState] = useState<State>({ status: "loading" });
 
@@ -56,17 +53,26 @@ export default function WordScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Stack.Screen
-        options={{ title, headerLargeTitleShadowVisible: false }}
-      />
+      <Stack.Screen options={{ title, headerLargeTitleShadowVisible: false }} />
 
-      {state.status === "loading" && <LoadingState />}
+      {state.status === "loading" && <LoadingState word={word} />}
 
       {state.status === "error" && (
         <ErrorState
           error={state.error}
+          word={word}
+          suggestions={
+            state.error.kind === "not-found" ? suggestWords(word, history) : []
+          }
           onRetry={load}
-          onGoBack={() => router.back()}
+          onGoBack={() => (router.canGoBack() ? router.back() : router.replace("/"))}
+          onSearchAgain={() => router.navigate("/")}
+          onSuggest={(suggestion) =>
+            router.replace({
+              pathname: "/word/[word]",
+              params: { word: suggestion },
+            })
+          }
         />
       )}
 
@@ -75,67 +81,156 @@ export default function WordScreen() {
   );
 }
 
-function LoadingState() {
+function LoadingState({ word }: { word: string }) {
   return (
-    <View className="flex-1 items-center justify-center gap-3">
-      <ActivityIndicator />
-      <Text className="text-[15px] text-muted-foreground">Searching…</Text>
+    <View className="flex-1 items-center justify-center gap-6 px-8">
+      {word ? (
+        <Text
+          numberOfLines={1}
+          className="text-[34px] font-bold tracking-tight text-foreground opacity-20 capitalize"
+        >
+          {word}
+        </Text>
+      ) : null}
+      <View className="items-center gap-3">
+        <ActivityIndicator />
+        <Text className="text-sm tracking-wide text-muted-foreground">
+          Searching…
+        </Text>
+      </View>
     </View>
+  );
+}
+
+function ActionButton({
+  label,
+  variant,
+  icon,
+  onPress,
+}: {
+  label: string;
+  variant: "primary" | "secondary";
+  icon?: typeof RotateCw;
+  onPress: () => void;
+}) {
+  const primary = variant === "primary";
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      className={`flex-1 h-[52px] flex-row items-center justify-center gap-2 rounded-2xl border-continuous ${
+        primary ? "bg-foreground active:opacity-80" : "bg-secondary active:opacity-70"
+      }`}
+    >
+      {icon && (
+        <Icon
+          icon={icon}
+          className={`w-[18px] h-[18px] ${primary ? "text-background" : "text-foreground"}`}
+        />
+      )}
+      <Text
+        className={`text-[17px] font-semibold ${primary ? "text-background" : "text-foreground"}`}
+      >
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
 function ErrorState({
   error,
+  word,
+  suggestions,
   onRetry,
   onGoBack,
+  onSearchAgain,
+  onSuggest,
 }: {
   error: DictionaryError;
+  word: string;
+  suggestions: string[];
   onRetry: () => void;
   onGoBack: () => void;
+  onSearchAgain: () => void;
+  onSuggest: (word: string) => void;
 }) {
+  const insets = useSafeAreaInsets();
   const notFound = error.kind === "not-found";
   const network = error.kind === "network";
 
-  return (
-    <View className="flex-1 items-center justify-center px-10 gap-3">
-      <View className="w-14 h-14 rounded-2xl bg-muted items-center justify-center">
-        <Icon
-          icon={network ? WifiOff : FileQuestion}
-          className="w-7 h-7 text-muted-foreground"
-        />
-      </View>
-      <Text className="text-[20px] font-semibold text-foreground text-center">
-        {notFound
-          ? "Word not found"
-          : network
-            ? "No connection"
-            : "Something went wrong"}
-      </Text>
-      <Text className="text-[15px] text-muted-foreground text-center leading-snug">
-        {error.message}
-      </Text>
+  const icon = notFound ? SearchX : network ? WifiOff : FileQuestion;
+  const headline = notFound
+    ? "No definitions found"
+    : network
+      ? "No connection"
+      : "Something went wrong";
+  const helper = notFound
+    ? `We couldn't find “${word}”. Double-check the spelling or try another word.`
+    : network
+      ? "You're offline. Check your internet connection and try again."
+      : error.message;
 
-      <View className="flex-row gap-3 mt-2">
-        <Pressable
-          onPress={onGoBack}
-          accessibilityRole="button"
-          className="rounded-xl bg-muted px-5 py-3 active:opacity-70 border-continuous"
-        >
-          <Text className="text-[15px] font-medium text-foreground">
-            Go back
-          </Text>
-        </Pressable>
-        {!notFound && (
-          <Pressable
-            onPress={onRetry}
-            accessibilityRole="button"
-            className="flex-row items-center gap-2 rounded-xl bg-foreground px-5 py-3 active:opacity-80 border-continuous"
-          >
-            <Icon icon={RotateCw} className="w-4 h-4 text-background" />
-            <Text className="text-[15px] font-semibold text-background">
-              Retry
-            </Text>
-          </Pressable>
+  return (
+    <View className="flex-1">
+      {/* Centered message */}
+      <View className="flex-1 items-center justify-center px-8">
+        <View className="w-[88px] h-[88px] rounded-[28px] bg-secondary items-center justify-center border-continuous">
+          <Icon icon={icon} className="w-9 h-9 text-foreground" />
+        </View>
+
+        <Text className="mt-6 text-[22px] font-bold tracking-tight text-foreground text-center">
+          {headline}
+        </Text>
+        <Text className="mt-3 max-w-[300px] text-[15px] leading-relaxed text-muted-foreground text-center">
+          {helper}
+        </Text>
+
+        {/* Did you mean? */}
+        {notFound && suggestions.length > 0 && (
+          <View className="items-center mt-8">
+            <Text className="text-sm text-muted-foreground">Did you mean?</Text>
+            <View className="flex-row flex-wrap justify-center gap-2.5 mt-3">
+              {suggestions.map((suggestion) => (
+                <Pressable
+                  key={suggestion}
+                  onPress={() => onSuggest(suggestion)}
+                  accessibilityRole="button"
+                  className="rounded-full bg-secondary px-3.5 py-1.5 active:opacity-60 border-continuous"
+                >
+                  <Text className="text-sm font-medium text-foreground">
+                    {suggestion}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
+      </View>
+
+      {/* Pinned actions */}
+      <View
+        className="px-5 pt-4 gap-3"
+        style={{ paddingBottom: insets.bottom + 16 }}
+      >
+        {notFound ? (
+          <View className="flex-row gap-3">
+            <ActionButton label="Go back" variant="secondary" onPress={onGoBack} />
+            <ActionButton
+              label="Search again"
+              variant="primary"
+              onPress={onSearchAgain}
+            />
+          </View>
+        ) : (
+          <View className="gap-3">
+            <ActionButton
+              label="Retry"
+              variant="primary"
+              icon={RotateCw}
+              onPress={onRetry}
+            />
+            <ActionButton label="Go back" variant="secondary" onPress={onGoBack} />
+          </View>
         )}
       </View>
     </View>
@@ -154,17 +249,17 @@ function WordDetails({ entries }: { entries: WordEntry[] }) {
       contentContainerClassName="android:pb-safe px-5 pb-12"
     >
       {/* Headword + phonetics + audio */}
-      <View className="pt-4 pb-5">
-        <Text className="text-[34px] font-bold text-foreground leading-tight capitalize">
+      <View className="pt-3 pb-6">
+        <Text className="text-[40px] font-bold tracking-tight text-foreground leading-tight capitalize">
           {headword}
         </Text>
         {phonetic && (
-          <Text className="text-[17px] text-muted-foreground mt-1">
+          <Text className="text-[17px] text-muted-foreground tracking-wide mt-2">
             {phonetic}
           </Text>
         )}
         {pronunciations.length > 0 && (
-          <View className="flex-row flex-wrap gap-2 mt-4">
+          <View className="flex-row flex-wrap gap-2.5 mt-4">
             {pronunciations.map((p) => (
               <AudioButton key={p.url} url={p.url} label={p.label} />
             ))}
@@ -185,26 +280,22 @@ function WordDetails({ entries }: { entries: WordEntry[] }) {
   );
 }
 
-function MeaningBlock({
-  meaning,
-}: {
-  meaning: WordEntry["meanings"][number];
-}) {
+function MeaningBlock({ meaning }: { meaning: WordEntry["meanings"][number] }) {
   return (
-    <View className="mb-7">
+    <View className="mb-8">
       {/* Part of speech */}
-      <View className="flex-row items-center gap-3 mb-3">
-        <Text className="text-[15px] font-semibold italic text-foreground">
+      <View className="flex-row items-center gap-4 mb-4">
+        <Text className="text-[16px] italic text-foreground">
           {meaning.partOfSpeech}
         </Text>
         <View className="flex-1 h-px bg-border" />
       </View>
 
       {/* Definitions */}
-      <View className="gap-3.5">
+      <View className="gap-5">
         {meaning.definitions.map((def, index) => (
           <View key={`${index}-${def.definition}`} className="flex-row gap-3">
-            <Text className="text-[15px] text-muted-foreground w-5 text-right">
+            <Text className="text-[17px] font-medium text-foreground">
               {index + 1}.
             </Text>
             <View className="flex-1">
@@ -212,7 +303,7 @@ function MeaningBlock({
                 {def.definition}
               </Text>
               {def.example && (
-                <Text className="text-[15px] text-muted-foreground italic leading-relaxed mt-1">
+                <Text className="text-[15px] text-muted-foreground italic leading-relaxed mt-2">
                   “{def.example}”
                 </Text>
               )}
@@ -223,13 +314,20 @@ function MeaningBlock({
 
       {/* Synonyms */}
       {meaning.synonyms && meaning.synonyms.length > 0 && (
-        <View className="flex-row flex-wrap items-baseline gap-x-2 mt-3.5 pl-8">
-          <Text className="text-[13px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <View className="mt-5">
+          <Text className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Synonyms
           </Text>
-          <Text className="text-[15px] text-foreground flex-1">
-            {meaning.synonyms.slice(0, 8).join(", ")}
-          </Text>
+          <View className="flex-row flex-wrap gap-2 mt-3">
+            {meaning.synonyms.slice(0, 8).map((synonym) => (
+              <View
+                key={synonym}
+                className="rounded-full bg-secondary px-3.5 py-1.5 border-continuous"
+              >
+                <Text className="text-sm text-foreground">{synonym}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       )}
     </View>

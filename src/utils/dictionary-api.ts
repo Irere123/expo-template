@@ -176,3 +176,119 @@ export function getPhoneticText(entries: WordEntry[]): string | undefined {
   }
   return undefined;
 }
+
+/* ─── "Did you mean?" suggestions ─── */
+
+// The Free Dictionary API does not return spelling suggestions on a 404, so we
+// derive them on-device by edit-distance against a list of common words (plus
+// whatever the user has already looked up). This keeps the "word not found"
+// screen helpful instead of being a dead end.
+const COMMON_WORDS = [
+  "serendipity", "ephemeral", "eloquent", "mellifluous", "petrichor",
+  "quixotic", "quixote", "luminous", "ineffable", "halcyon", "ethereal",
+  "solace", "nostalgia", "resilience", "ambiguous", "benevolent", "candid",
+  "diligent", "empathy", "fortuitous", "gregarious", "humble", "intricate",
+  "jubilant", "kindle", "lucid", "meticulous", "nuance", "oblivion",
+  "paradox", "quaint", "resonate", "serene", "tenacious", "ubiquitous",
+  "vivid", "whimsical", "zealous", "abundant", "acumen", "aesthetic",
+  "altruism", "anomaly", "articulate", "authentic", "brevity", "cadence",
+  "catalyst", "cogent", "compelling", "concise", "convey", "curious",
+  "deliberate", "delicate", "demure", "depict", "dexterity", "dichotomy",
+  "earnest", "eclectic", "elaborate", "elated", "eloquence", "elusive",
+  "enigma", "epiphany", "equanimity", "esoteric", "euphoria", "evocative",
+  "exquisite", "fervent", "fleeting", "fragile", "garrulous", "genuine",
+  "graceful", "gratitude", "harmony", "idyllic", "illuminate", "imminent",
+  "immutable", "incandescent", "ineffective", "innate", "innovate", "insight",
+  "inspire", "integrity", "intrepid", "intuitive", "jovial", "languid",
+  "lethargic", "liberty", "limpid", "magnanimous", "marvel", "melancholy",
+  "memento", "mercurial", "mirth", "myriad", "nebulous", "nimble", "novel",
+  "obscure", "opulent", "ornate", "panacea", "paramount", "pensive",
+  "perennial", "perplex", "pertinent", "phenomenon", "placid", "poignant",
+  "pragmatic", "precious", "profound", "prolific", "prudent", "quintessential",
+  "radiant", "rapture", "reciprocal", "redolent", "reflect", "rejuvenate",
+  "relish", "reminisce", "reverie", "sagacious", "sanguine", "scintillating",
+  "sentiment", "solitude", "sublime", "succinct", "surreal", "sycophant",
+  "tangible", "tenuous", "tranquil", "translucent", "tremendous", "vibrant",
+  "vigilant", "vindicate", "wander", "wanderlust", "winsome", "wistful",
+  "wonder", "zenith", "zephyr", "definition", "dictionary", "language",
+  "synonym", "antonym", "pronounce", "vocabulary",
+];
+
+/** Levenshtein edit distance (capped early for performance). */
+function editDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  if (Math.abs(m - n) > 2) return 99;
+  let prev = Array.from({ length: n + 1 }, (_, i) => i);
+  let curr = new Array<number>(n + 1);
+  for (let i = 1; i <= m; i++) {
+    curr[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+    }
+    [prev, curr] = [curr, prev];
+  }
+  return prev[n];
+}
+
+/**
+ * Suggest near-matches for a misspelled query. `pool` lets the caller fold in
+ * extra candidates (e.g. the user's search history). Returns up to 3 words,
+ * closest first, or an empty array when nothing is close enough.
+ */
+export function suggestWords(query: string, pool: string[] = []): string[] {
+  const q = query.trim().toLowerCase();
+  if (q.length < 2) return [];
+
+  // Short words tolerate fewer edits so we don't suggest unrelated words.
+  const threshold = q.length <= 4 ? 1 : 2;
+
+  const seen = new Set<string>();
+  const scored: { word: string; dist: number }[] = [];
+  for (const candidate of [...pool, ...COMMON_WORDS]) {
+    const w = candidate.trim().toLowerCase();
+    if (!w || w === q || seen.has(w)) continue;
+    seen.add(w);
+    const dist = editDistance(q, w);
+    if (dist > 0 && dist <= threshold) scored.push({ word: w, dist });
+  }
+
+  scored.sort((a, b) => a.dist - b.dist || a.word.localeCompare(b.word));
+  return scored.slice(0, 3).map((s) => s.word);
+}
+
+/* ─── Word of the day ─── */
+
+export type WordOfTheDay = {
+  word: string;
+  partOfSpeech: string;
+  gloss: string;
+};
+
+// A small curated rotation of words that all resolve on the API, so tapping the
+// card always leads to a real entry.
+const WORDS_OF_THE_DAY: WordOfTheDay[] = [
+  { word: "petrichor", partOfSpeech: "noun", gloss: "A pleasant, earthy smell produced when rain falls on dry soil." },
+  { word: "serendipity", partOfSpeech: "noun", gloss: "The occurrence of events by chance in a happy or beneficial way." },
+  { word: "ephemeral", partOfSpeech: "adjective", gloss: "Lasting for a very short time; fleeting." },
+  { word: "mellifluous", partOfSpeech: "adjective", gloss: "Sweet or musical; pleasant to hear." },
+  { word: "eloquent", partOfSpeech: "adjective", gloss: "Fluent or persuasive in speaking or writing." },
+  { word: "quixotic", partOfSpeech: "adjective", gloss: "Extremely idealistic; unrealistic and impractical." },
+  { word: "luminous", partOfSpeech: "adjective", gloss: "Full of or shedding light; radiant." },
+  { word: "ineffable", partOfSpeech: "adjective", gloss: "Too great or extreme to be expressed in words." },
+  { word: "halcyon", partOfSpeech: "adjective", gloss: "Denoting a period that is idyllically happy and peaceful." },
+  { word: "ethereal", partOfSpeech: "adjective", gloss: "Extremely delicate and light, seemingly not of this world." },
+  { word: "solace", partOfSpeech: "noun", gloss: "Comfort or consolation in a time of distress." },
+  { word: "nostalgia", partOfSpeech: "noun", gloss: "A sentimental longing for the past." },
+];
+
+/** Deterministic word of the day, rotating once per calendar day. */
+export function getWordOfTheDay(date: Date = new Date()): WordOfTheDay {
+  const dayOfYear = Math.floor(
+    (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) -
+      Date.UTC(date.getFullYear(), 0, 0)) /
+      86_400_000,
+  );
+  return WORDS_OF_THE_DAY[dayOfYear % WORDS_OF_THE_DAY.length];
+}
