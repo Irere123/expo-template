@@ -49,6 +49,16 @@ export default function WordScreen() {
     load();
   }, [load]);
 
+  // Tapping a synonym looks it up as a new search (pushed so Back returns here).
+  const onSelectWord = useCallback(
+    (next: string) => {
+      const target = next.trim().toLowerCase();
+      if (!target || target === word.toLowerCase()) return;
+      router.push({ pathname: "/word/[word]", params: { word: target } });
+    },
+    [router, word],
+  );
+
   return (
     <View className="flex-1 bg-background">
       {state.status === "loading" && <LoadingState word={word} />}
@@ -72,7 +82,9 @@ export default function WordScreen() {
         />
       )}
 
-      {state.status === "success" && <WordDetails entries={state.data} />}
+      {state.status === "success" && (
+        <WordDetails entries={state.data} onSelectWord={onSelectWord} />
+      )}
     </View>
   );
 }
@@ -233,7 +245,13 @@ function ErrorState({
   );
 }
 
-function WordDetails({ entries }: { entries: WordEntry[] }) {
+function WordDetails({
+  entries,
+  onSelectWord,
+}: {
+  entries: WordEntry[];
+  onSelectWord: (word: string) => void;
+}) {
   const headword = entries[0]?.word ?? "";
   const phonetic = getPhoneticText(entries);
   const pronunciations = getPronunciations(entries);
@@ -269,6 +287,7 @@ function WordDetails({ entries }: { entries: WordEntry[] }) {
           <MeaningBlock
             key={`${entryIndex}-${meaningIndex}-${meaning.partOfSpeech}`}
             meaning={meaning}
+            onSelectWord={onSelectWord}
           />
         )),
       )}
@@ -276,7 +295,13 @@ function WordDetails({ entries }: { entries: WordEntry[] }) {
   );
 }
 
-function MeaningBlock({ meaning }: { meaning: WordEntry["meanings"][number] }) {
+function MeaningBlock({
+  meaning,
+  onSelectWord,
+}: {
+  meaning: WordEntry["meanings"][number];
+  onSelectWord: (word: string) => void;
+}) {
   return (
     <View className="mb-8">
       {/* Part of speech */}
@@ -316,12 +341,15 @@ function MeaningBlock({ meaning }: { meaning: WordEntry["meanings"][number] }) {
           </Text>
           <View className="flex-row flex-wrap gap-2 mt-3">
             {meaning.synonyms.slice(0, 8).map((synonym) => (
-              <View
+              <Pressable
                 key={synonym}
-                className="rounded-full bg-secondary px-3.5 py-1.5 border-continuous"
+                onPress={() => onSelectWord(synonym)}
+                accessibilityRole="button"
+                accessibilityLabel={`Look up ${synonym}`}
+                className="rounded-full bg-secondary px-3.5 py-1.5 active:opacity-60 border-continuous"
               >
                 <Text className="text-sm text-foreground">{synonym}</Text>
-              </View>
+              </Pressable>
             ))}
           </View>
         </View>
