@@ -11,6 +11,7 @@ import Animated, {
 import { useCSSVariable } from "uniwind";
 
 import { useBookmarks } from "@/utils/bookmarks";
+import { haptics } from "@/utils/haptics";
 
 /**
  * Header toggle that saves / unsaves the current word. The bookmark fills when
@@ -30,6 +31,9 @@ export function BookmarkButton({ word }: { word: string }) {
       withTiming(0.8, { duration: 90 }),
       withSpring(1, { damping: 6, stiffness: 220 }),
     );
+    // active = already saved, so this tap removes it.
+    if (active) haptics.light();
+    else haptics.success();
     toggleBookmark(word);
   };
 

@@ -22,6 +22,7 @@ import { Icon } from "@/components/icon";
 import { MainHeader } from "@/components/main-header";
 import { EXPLORE_WORDS, getWordOfTheDay } from "@/utils/dictionary-api";
 import { fonts } from "@/utils/fonts";
+import { haptics } from "@/utils/haptics";
 import { useHistory } from "@/utils/search-history";
 
 /** Gentle staggered entrance for each section on mount. */
@@ -40,12 +41,14 @@ export default function SearchScreen() {
   const openWord = (raw: string) => {
     const word = raw.trim().toLowerCase();
     if (!word) return;
+    haptics.selection();
     router.push({ pathname: "/word/[word]", params: { word } });
   };
 
   const submit = () => {
     // Validate that the search field is not empty before navigating.
     if (!query.trim()) {
+      haptics.warning();
       setError("Please enter a word to search.");
       return;
     }

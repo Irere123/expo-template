@@ -9,6 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { Icon } from "@/components/icon";
+import { haptics } from "@/utils/haptics";
 import { useThemePreference } from "@/utils/theme";
 
 /**
@@ -46,7 +47,10 @@ export function ThemeToggle() {
 
   return (
     <Pressable
-      onPress={() => setPreference(isDark ? "light" : "dark")}
+      onPress={() => {
+        haptics.light();
+        setPreference(isDark ? "light" : "dark");
+      }}
       hitSlop={12}
       accessibilityRole="button"
       accessibilityLabel={

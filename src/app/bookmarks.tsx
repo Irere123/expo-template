@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon } from "@/components/icon";
 import { MainHeader } from "@/components/main-header";
 import { useBookmarks } from "@/utils/bookmarks";
+import { haptics } from "@/utils/haptics";
 
 export default function BookmarksScreen() {
   const router = useRouter();
@@ -15,11 +16,13 @@ export default function BookmarksScreen() {
 
   const bottomPadding = (Platform.OS === "android" ? insets.bottom : 0) + 48;
 
-  const openWord = (word: string) =>
+  const openWord = (word: string) => {
+    haptics.selection();
     router.push({
       pathname: "/word/[word]",
       params: { word: word.trim().toLowerCase() },
     });
+  };
 
   return (
     <>
@@ -67,7 +70,10 @@ export default function BookmarksScreen() {
                     </Text>
                   </Pressable>
                   <Pressable
-                    onPress={() => removeBookmark(word)}
+                    onPress={() => {
+                      haptics.light();
+                      removeBookmark(word);
+                    }}
                     accessibilityRole="button"
                     accessibilityLabel={`Remove ${word} from bookmarks`}
                     hitSlop={10}

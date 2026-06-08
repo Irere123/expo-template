@@ -39,6 +39,7 @@ import {
   type WordEntry,
 } from "@/utils/dictionary-api";
 import { fonts } from "@/utils/fonts";
+import { haptics } from "@/utils/haptics";
 import { useHistory } from "@/utils/search-history";
 
 type State =
@@ -79,6 +80,7 @@ export default function WordScreen() {
     (next: string) => {
       const target = next.trim().toLowerCase();
       if (!target || target === word.toLowerCase()) return;
+      haptics.selection();
       router.push({ pathname: "/word/[word]", params: { word: target } });
     },
     [router, word],
@@ -512,27 +514,50 @@ function MeaningBlock({
         ))}
       </View>
 
-      {/* Synonyms */}
-      {meaning.synonyms && meaning.synonyms.length > 0 && (
-        <View className="mt-5">
-          <Text className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Synonyms
-          </Text>
-          <View className="flex-row flex-wrap gap-2 mt-3">
-            {meaning.synonyms.slice(0, 8).map((synonym) => (
-              <Pressable
-                key={synonym}
-                onPress={() => onSelectWord(synonym)}
-                accessibilityRole="button"
-                accessibilityLabel={`Look up ${synonym}`}
-                className="rounded-full bg-secondary px-3.5 py-1.5 active:opacity-60 border-continuous"
-              >
-                <Text className="text-sm text-foreground">{synonym}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-      )}
+      {/* Synonyms / antonyms */}
+      <RelatedWords
+        label="Synonyms"
+        words={meaning.synonyms}
+        onSelectWord={onSelectWord}
+      />
+      <RelatedWords
+        label="Antonyms"
+        words={meaning.antonyms}
+        onSelectWord={onSelectWord}
+      />
+    </View>
+  );
+}
+
+function RelatedWords({
+  label,
+  words,
+  onSelectWord,
+}: {
+  label: string;
+  words?: string[];
+  onSelectWord: (word: string) => void;
+}) {
+  if (!words || words.length === 0) return null;
+
+  return (
+    <View className="mt-5">
+      <Text className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </Text>
+      <View className="flex-row flex-wrap gap-2 mt-3">
+        {words.slice(0, 8).map((word) => (
+          <Pressable
+            key={word}
+            onPress={() => onSelectWord(word)}
+            accessibilityRole="button"
+            accessibilityLabel={`Look up ${word}`}
+            className="rounded-full bg-secondary px-3.5 py-1.5 active:opacity-60 border-continuous"
+          >
+            <Text className="text-sm text-foreground">{word}</Text>
+          </Pressable>
+        ))}
+      </View>
     </View>
   );
 }
