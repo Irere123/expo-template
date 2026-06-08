@@ -1,4 +1,5 @@
-import { Bookmark } from "lucide-react-native";
+import { Bookmark01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react-native";
 import { Pressable } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -44,11 +45,12 @@ export function BookmarkButton({ word }: { word: string }) {
       className="w-10 h-10 items-center justify-center -mr-1.5 active:opacity-60"
     >
       <Animated.View style={style}>
-        <Bookmark
+        <HugeiconsIcon
+          icon={Bookmark01Icon}
           size={23}
           color={active ? primary : foreground}
-          fill={active ? primary : "transparent"}
-          strokeWidth={2}
+          fill={active ? primary : "none"}
+          strokeWidth={1.8}
         />
       </Animated.View>
     </Pressable>

@@ -1,4 +1,4 @@
-import { Moon, Sun } from "lucide-react-native";
+import { Moon02Icon, Sun03Icon } from "@hugeicons/core-free-icons";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
 import Animated, {
@@ -58,12 +58,12 @@ export function ThemeToggle() {
         <Animated.View
           style={[StyleSheet.absoluteFill, styles.center, sunStyle]}
         >
-          <Icon icon={Sun} className="w-6 h-6 text-foreground" />
+          <Icon icon={Sun03Icon} className="w-6 h-6 text-foreground" />
         </Animated.View>
         <Animated.View
           style={[StyleSheet.absoluteFill, styles.center, moonStyle]}
         >
-          <Icon icon={Moon} className="w-[22px] h-[22px] text-foreground" />
+          <Icon icon={Moon02Icon} className="w-[22px] h-[22px] text-foreground" />
         </Animated.View>
       </View>
     </Pressable>

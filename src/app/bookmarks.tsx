@@ -1,5 +1,5 @@
+import { Bookmark01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { useRouter } from "expo-router";
-import { Bookmark, X } from "lucide-react-native";
 import { Fragment } from "react";
 import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -56,7 +56,7 @@ export default function BookmarksScreen() {
                     className="flex-1 flex-row items-center gap-3 active:opacity-60"
                   >
                     <Icon
-                      icon={Bookmark}
+                      icon={Bookmark01Icon}
                       className="w-[18px] h-[18px] text-foreground"
                     />
                     <Text
@@ -73,7 +73,7 @@ export default function BookmarksScreen() {
                     hitSlop={10}
                     className="p-1 -mr-1 active:opacity-50"
                   >
-                    <Icon icon={X} className="w-[18px] h-[18px] text-muted-foreground" />
+                    <Icon icon={Cancel01Icon} className="w-[18px] h-[18px] text-muted-foreground" />
                   </Pressable>
                 </View>
                 {index < bookmarks.length - 1 && (
@@ -85,7 +85,7 @@ export default function BookmarksScreen() {
         ) : (
           <View className="items-center px-10 pt-20 gap-3">
             <View className="w-16 h-16 rounded-3xl bg-secondary items-center justify-center border-continuous">
-              <Icon icon={Bookmark} className="w-7 h-7 text-muted-foreground" />
+              <Icon icon={Bookmark01Icon} className="w-7 h-7 text-muted-foreground" />
             </View>
             <Text className="text-[17px] font-semibold text-foreground text-center">
               No bookmarks yet

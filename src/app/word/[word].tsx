@@ -1,5 +1,11 @@
+import {
+  Alert02Icon,
+  ReloadIcon,
+  SearchRemoveIcon,
+  WifiDisconnected01Icon,
+} from "@hugeicons/core-free-icons";
+import type { IconSvgElement } from "@hugeicons/react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { FileQuestion, RotateCw, SearchX, WifiOff } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import {
   type DimensionValue,
@@ -272,7 +278,7 @@ function ActionButton({
 }: {
   label: string;
   variant: "primary" | "secondary";
-  icon?: typeof RotateCw;
+  icon?: IconSvgElement;
   onPress: () => void;
 }) {
   const primary = variant === "primary";
@@ -320,7 +326,11 @@ function ErrorState({
   const notFound = error.kind === "not-found";
   const network = error.kind === "network";
 
-  const icon = notFound ? SearchX : network ? WifiOff : FileQuestion;
+  const icon = notFound
+    ? SearchRemoveIcon
+    : network
+      ? WifiDisconnected01Icon
+      : Alert02Icon;
   const headline = notFound
     ? "No definitions found"
     : network
@@ -391,7 +401,7 @@ function ErrorState({
             <ActionButton
               label="Retry"
               variant="primary"
-              icon={RotateCw}
+              icon={ReloadIcon}
               onPress={onRetry}
             />
             <ActionButton label="Go back" variant="secondary" onPress={onGoBack} />

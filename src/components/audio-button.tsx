@@ -1,5 +1,5 @@
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { Pause, Volume2 } from "lucide-react-native";
+import { PauseIcon, VolumeHighIcon } from "@hugeicons/core-free-icons";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -44,7 +44,7 @@ export function AudioButton({ url, label }: { url: string; label: string }) {
   if (failed) {
     return (
       <View className="flex-row items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 opacity-60 border-continuous">
-        <Icon icon={Volume2} className="w-4 h-4 text-muted-foreground" />
+        <Icon icon={VolumeHighIcon} className="w-4 h-4 text-muted-foreground" />
         <Text className="text-sm text-muted-foreground">
           {label} unavailable
         </Text>
@@ -60,7 +60,7 @@ export function AudioButton({ url, label }: { url: string; label: string }) {
       className="flex-row items-center gap-1.5 rounded-full bg-secondary px-3.5 py-1.5 active:opacity-60 border-continuous"
     >
       <Icon
-        icon={isPlaying ? Pause : Volume2}
+        icon={isPlaying ? PauseIcon : VolumeHighIcon}
         className="w-4 h-4 text-foreground"
       />
       <Text className="text-sm font-medium text-foreground">{label}</Text>

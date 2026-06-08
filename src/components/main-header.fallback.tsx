@@ -1,5 +1,5 @@
+import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { Stack } from "expo-router";
-import { Menu } from "lucide-react-native";
 import { Pressable } from "react-native";
 
 import { Icon } from "@/components/icon";
@@ -24,7 +24,7 @@ export function MainHeader() {
             accessibilityRole="button"
             className="p-2 -ml-1 active:opacity-60"
           >
-            <Icon icon={Menu} className="w-6 h-6 text-foreground" />
+            <Icon icon={Menu01Icon} className="w-6 h-6 text-foreground" />
           </Pressable>
         ),
         headerRight: () => <ThemeToggle />,

@@ -8,7 +8,14 @@ import { cn } from "@/utils/tailwind";
 import type { Href } from "expo-router";
 import { usePathname } from "expo-router";
 
-import { Bookmark, BookOpen, Clock, Search, X } from "lucide-react-native";
+import {
+  Bookmark01Icon,
+  BookOpen01Icon,
+  Cancel01Icon,
+  Clock01Icon,
+  Search01Icon,
+} from "@hugeicons/core-free-icons";
+import type { IconSvgElement } from "@hugeicons/react-native";
 import React, { createContext, use, useCallback, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
@@ -58,7 +65,7 @@ function DrawerNavItem({
   onPress,
 }: {
   label: string;
-  icon: typeof Search;
+  icon: IconSvgElement;
   onPress: () => void;
 }) {
   return (
@@ -92,7 +99,7 @@ function DrawerHistoryItem({
       )}
     >
       <Icon
-        icon={Clock}
+        icon={Clock01Icon}
         className={cn(
           "w-[18px] h-[18px]",
           active ? "text-foreground" : "text-muted-foreground",
@@ -114,7 +121,7 @@ function DrawerHistoryItem({
         hitSlop={8}
         className="p-1.5 active:opacity-50"
       >
-        <Icon icon={X} className="w-4 h-4 text-muted-foreground" />
+        <Icon icon={Cancel01Icon} className="w-4 h-4 text-muted-foreground" />
       </Pressable>
     </Pressable>
   );
@@ -137,7 +144,7 @@ export function DrawerContent({
       {/* Header */}
       <View className="flex-row items-center gap-3 px-4 pt-2 pb-3">
         <View className="w-11 h-11 rounded-2xl bg-primary items-center justify-center border-continuous">
-          <Icon icon={BookOpen} className="w-5 h-5 text-primary-foreground" />
+          <Icon icon={BookOpen01Icon} className="w-5 h-5 text-primary-foreground" />
         </View>
         <Text
           style={fonts.title}
@@ -149,10 +156,14 @@ export function DrawerContent({
 
       {/* Nav + search history */}
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 8 }}>
-        <DrawerNavItem label="Search" icon={Search} onPress={() => onNavigate("/")} />
+        <DrawerNavItem
+          label="Search"
+          icon={Search01Icon}
+          onPress={() => onNavigate("/")}
+        />
         <DrawerNavItem
           label="Bookmarks"
-          icon={Bookmark}
+          icon={Bookmark01Icon}
           onPress={() => onNavigate("/bookmarks")}
         />
 

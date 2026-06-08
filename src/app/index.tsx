@@ -1,5 +1,10 @@
 import { useRouter } from "expo-router";
-import { BookOpenText, ChevronRight, Clock, Search } from "lucide-react-native";
+import {
+  ArrowRight01Icon,
+  BookOpen01Icon,
+  Clock01Icon,
+  Search01Icon,
+} from "@hugeicons/core-free-icons";
 import { Fragment, useState } from "react";
 import {
   Keyboard,
@@ -61,7 +66,7 @@ export default function SearchScreen() {
         {/* Hero */}
         <View className="px-5 pt-4 pb-5">
           <View className="w-12 h-12 rounded-2xl bg-primary items-center justify-center mb-4 border-continuous">
-            <Icon icon={BookOpenText} className="w-6 h-6 text-primary-foreground" />
+            <Icon icon={BookOpen01Icon} className="w-6 h-6 text-primary-foreground" />
           </View>
           <Text
             style={fonts.display}
@@ -77,7 +82,7 @@ export default function SearchScreen() {
         {/* Search box */}
         <View className="px-5">
           <View className="flex-row items-center gap-3 h-[52px] rounded-full bg-secondary px-4 border-continuous">
-            <Icon icon={Search} className="h-5 w-5 text-muted-foreground" />
+            <Icon icon={Search01Icon} className="h-5 w-5 text-muted-foreground" />
             <TextInput
               value={query}
               onChangeText={(text) => {
@@ -140,7 +145,7 @@ export default function SearchScreen() {
                   accessibilityRole="button"
                   className="flex-row items-center px-5 py-4 gap-3 active:bg-muted"
                 >
-                  <Icon icon={Clock} className="w-[18px] h-[18px] text-muted-foreground" />
+                  <Icon icon={Clock01Icon} className="w-[18px] h-[18px] text-muted-foreground" />
                   <Text
                     numberOfLines={1}
                     className="flex-1 text-[17px] font-medium text-foreground capitalize"
@@ -148,7 +153,7 @@ export default function SearchScreen() {
                     {word}
                   </Text>
                   <Icon
-                    icon={ChevronRight}
+                    icon={ArrowRight01Icon}
                     className="w-[18px] h-[18px] text-muted-foreground"
                   />
                 </Pressable>
