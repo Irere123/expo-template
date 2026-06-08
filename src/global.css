@@ -26,6 +26,7 @@
     --app-sidebar: oklch(0.975 0.006 274);
     --app-primary: oklch(0.53 0.19 274);
     --app-primary-foreground: oklch(0.99 0.012 274);
+    --app-primary-soft: oklch(0.955 0.035 274);
     --app-shadow-card: 0 1px 3px oklch(0.2 0.03 274 / 0.08), 0 1px 2px oklch(0.2 0.03 274 / 0.05);
     --app-shadow-float: 0 4px 16px oklch(0.2 0.03 274 / 0.1), 0 1px 4px oklch(0.2 0.03 274 / 0.05);
   }
@@ -42,6 +43,7 @@
     --app-sidebar: oklch(0.165 0.018 274);
     --app-primary: oklch(0.58 0.18 274);
     --app-primary-foreground: oklch(0.99 0.012 274);
+    --app-primary-soft: oklch(0.27 0.05 274);
     --app-shadow-card: 0 1px 3px oklch(0 0 0 / 0.25), 0 1px 2px oklch(0 0 0 / 0.2);
     --app-shadow-float: 0 4px 16px oklch(0 0 0 / 0.35), 0 1px 4px oklch(0 0 0 / 0.25);
   }
@@ -60,6 +62,7 @@
   --color-sidebar: var(--app-sidebar);
   --color-primary: var(--app-primary);
   --color-primary-foreground: var(--app-primary-foreground);
+  --color-primary-soft: var(--app-primary-soft);
 
   --shadow-card: var(--app-shadow-card);
   --shadow-float: var(--app-shadow-float);

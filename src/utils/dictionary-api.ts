@@ -292,3 +292,22 @@ export function getWordOfTheDay(date: Date = new Date()): WordOfTheDay {
   );
   return WORDS_OF_THE_DAY[dayOfYear % WORDS_OF_THE_DAY.length];
 }
+
+/* ─── Explore ─── */
+
+// A hand-picked set of evocative words for the home screen's "Explore" row —
+// all resolve on the API, so tapping any chip lands on a real entry.
+export const EXPLORE_WORDS = [
+  "serendipity",
+  "ephemeral",
+  "petrichor",
+  "mellifluous",
+  "eloquent",
+  "quixotic",
+  "ineffable",
+  "epiphany",
+  "luminous",
+  "aurora",
+  "nostalgia",
+  "labyrinth",
+];
