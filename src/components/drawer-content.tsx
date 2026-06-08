@@ -2,6 +2,7 @@ import "@/global.css";
 
 import { Icon } from "@/components/icon";
 import { SafeAreaView } from "@/components/tw";
+import { fonts } from "@/utils/fonts";
 import { useHistory } from "@/utils/search-history";
 import { cn } from "@/utils/tailwind";
 import type { Href } from "expo-router";
@@ -127,7 +128,10 @@ export function DrawerContent({
         <View className="w-11 h-11 rounded-2xl bg-secondary items-center justify-center border-continuous">
           <Icon icon={BookOpen} className="w-5 h-5 text-foreground" />
         </View>
-        <Text className="text-[26px] font-bold tracking-tight text-foreground">
+        <Text
+          style={fonts.title}
+          className="text-[26px] font-bold tracking-tight text-foreground"
+        >
           Dictionary
         </Text>
       </View>

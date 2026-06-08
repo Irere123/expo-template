@@ -6,6 +6,13 @@ import {
 import { DrawerLayout } from "@/components/drawer-layout";
 import "@/global.css";
 import {
+  Fraunces_400Regular,
+  Fraunces_400Regular_Italic,
+  Fraunces_600SemiBold,
+  Fraunces_700Bold,
+  useFonts,
+} from "@expo-google-fonts/fraunces";
+import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider as RNTheme,
@@ -42,10 +49,21 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({
+    Fraunces_400Regular,
+    Fraunces_400Regular_Italic,
+    Fraunces_600SemiBold,
+    Fraunces_700Bold,
+  });
+
   // Allow pronunciations to play even when the device is on silent mode.
   useEffect(() => {
     setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
   }, []);
+
+  // Hold the UI until the serif is ready so headwords don't reflow on first
+  // paint. If loading fails we render anyway and fall back to the system font.
+  if (!fontsLoaded && !fontError) return null;
 
   return (
     <ThemeProvider>

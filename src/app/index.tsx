@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon } from "@/components/icon";
 import { MainHeader } from "@/components/main-header";
 import { getWordOfTheDay } from "@/utils/dictionary-api";
+import { fonts } from "@/utils/fonts";
 import { useHistory } from "@/utils/search-history";
 
 export default function SearchScreen() {
@@ -62,7 +63,10 @@ export default function SearchScreen() {
           <View className="w-12 h-12 rounded-2xl bg-secondary items-center justify-center mb-4 border-continuous">
             <Icon icon={BookOpenText} className="w-6 h-6 text-foreground" />
           </View>
-          <Text className="text-[34px] font-bold tracking-tight text-foreground leading-tight">
+          <Text
+            style={fonts.display}
+            className="text-[34px] font-bold tracking-tight text-foreground leading-tight"
+          >
             Dictionary
           </Text>
           <Text className="text-[15px] text-muted-foreground mt-2 leading-snug">
@@ -172,14 +176,23 @@ export default function SearchScreen() {
             className="rounded-2xl bg-secondary px-5 py-5 active:opacity-70 border-continuous"
           >
             <View className="flex-row items-baseline gap-2">
-              <Text className="text-[22px] font-bold tracking-tight text-foreground capitalize">
+              <Text
+                style={fonts.title}
+                className="text-[24px] font-bold tracking-tight text-foreground capitalize"
+              >
                 {wotd.word}
               </Text>
-              <Text className="text-sm italic text-muted-foreground">
+              <Text
+                style={fonts.readingItalic}
+                className="text-sm italic text-muted-foreground"
+              >
                 {wotd.partOfSpeech}
               </Text>
             </View>
-            <Text className="text-sm text-muted-foreground mt-2 leading-relaxed">
+            <Text
+              style={fonts.reading}
+              className="text-[15px] text-muted-foreground mt-2 leading-relaxed"
+            >
               {wotd.gloss}
             </Text>
           </Pressable>

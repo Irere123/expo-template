@@ -14,6 +14,7 @@ import {
   suggestWords,
   type WordEntry,
 } from "@/utils/dictionary-api";
+import { fonts } from "@/utils/fonts";
 import { useHistory } from "@/utils/search-history";
 
 type State =
@@ -95,6 +96,7 @@ function LoadingState({ word }: { word: string }) {
       {word ? (
         <Text
           numberOfLines={1}
+          style={fonts.display}
           className="text-[34px] font-bold tracking-tight text-foreground opacity-20 capitalize"
         >
           {word}
@@ -186,7 +188,10 @@ function ErrorState({
           <Icon icon={icon} className="w-9 h-9 text-foreground" />
         </View>
 
-        <Text className="mt-6 text-[22px] font-bold tracking-tight text-foreground text-center">
+        <Text
+          style={fonts.title}
+          className="mt-6 text-[22px] font-bold tracking-tight text-foreground text-center"
+        >
           {headline}
         </Text>
         <Text className="mt-3 max-w-[300px] text-[15px] leading-relaxed text-muted-foreground text-center">
@@ -264,7 +269,10 @@ function WordDetails({
     >
       {/* Headword + phonetics + audio */}
       <View className="pt-3 pb-6">
-        <Text className="text-[40px] font-bold tracking-tight text-foreground leading-tight capitalize">
+        <Text
+          style={fonts.display}
+          className="text-[40px] font-bold tracking-tight text-foreground leading-tight capitalize"
+        >
           {headword}
         </Text>
         {phonetic && (
@@ -306,7 +314,10 @@ function MeaningBlock({
     <View className="mb-8">
       {/* Part of speech */}
       <View className="flex-row items-center gap-4 mb-4">
-        <Text className="text-[16px] italic text-foreground">
+        <Text
+          style={fonts.readingItalic}
+          className="text-[17px] italic text-foreground"
+        >
           {meaning.partOfSpeech}
         </Text>
         <View className="flex-1 h-px bg-border" />
@@ -320,11 +331,17 @@ function MeaningBlock({
               {index + 1}.
             </Text>
             <View className="flex-1">
-              <Text className="text-[17px] text-foreground leading-relaxed">
+              <Text
+                style={fonts.reading}
+                className="text-[17px] text-foreground leading-relaxed"
+              >
                 {def.definition}
               </Text>
               {def.example && (
-                <Text className="text-[15px] text-muted-foreground italic leading-relaxed mt-2">
+                <Text
+                  style={fonts.readingItalic}
+                  className="text-[15px] text-muted-foreground italic leading-relaxed mt-2"
+                >
                   “{def.example}”
                 </Text>
               )}
