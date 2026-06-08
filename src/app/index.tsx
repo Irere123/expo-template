@@ -1,20 +1,16 @@
 import { useRouter } from "expo-router";
-import {
-  BookOpenText,
-  ChevronRight,
-  Clock,
-  Search,
-  Sparkles,
-} from "lucide-react-native";
+import { BookOpenText, ChevronRight, Clock, Search } from "lucide-react-native";
 import { useState } from "react";
 import {
   Keyboard,
+  Platform,
   Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Icon } from "@/components/icon";
 import { MainHeader } from "@/components/main-header";
@@ -24,10 +20,16 @@ import { useHistory } from "@/utils/search-history";
 export default function SearchScreen() {
   const router = useRouter();
   const { history, clearHistory } = useHistory();
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const wotd = getWordOfTheDay();
+
+  // iOS adds the bottom safe-area via contentInsetAdjustmentBehavior; Android
+  // does not, so fold it in here. The extra gives breathing room above the
+  // home indicator.
+  const bottomPadding = (Platform.OS === "android" ? insets.bottom : 0) + 48;
 
   const openWord = (raw: string) => {
     const word = raw.trim().toLowerCase();
@@ -51,7 +53,7 @@ export default function SearchScreen() {
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerClassName="android:pb-safe pb-24"
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
         keyboardShouldPersistTaps="handled"
       >
         {/* Hero */}
@@ -155,12 +157,9 @@ export default function SearchScreen() {
 
         {/* Word of the day */}
         <View className="mt-9 px-5">
-          <View className="flex-row items-center gap-2 mb-3">
-            <Icon icon={Sparkles} className="w-3.5 h-3.5 text-muted-foreground" />
-            <Text className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Word of the day
-            </Text>
-          </View>
+          <Text className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+            Word of the day
+          </Text>
           <Pressable
             onPress={() => openWord(wotd.word)}
             accessibilityRole="button"
