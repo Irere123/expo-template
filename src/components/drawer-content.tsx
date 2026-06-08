@@ -8,7 +8,7 @@ import { cn } from "@/utils/tailwind";
 import type { Href } from "expo-router";
 import { usePathname } from "expo-router";
 
-import { Bookmark, BookOpen, Clock, Search } from "lucide-react-native";
+import { Bookmark, BookOpen, Clock, Search, X } from "lucide-react-native";
 import React, { createContext, use, useCallback, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
@@ -75,17 +75,19 @@ function DrawerNavItem({
 function DrawerHistoryItem({
   title,
   onPress,
+  onRemove,
   active,
 }: {
   title: string;
   onPress: () => void;
+  onRemove: () => void;
   active?: boolean;
 }) {
   return (
     <Pressable
       onPress={onPress}
       className={cn(
-        "flex-row items-center gap-3 px-3 py-3 mx-3 active:opacity-70",
+        "flex-row items-center gap-3 pl-3 pr-1.5 py-3 mx-3 active:opacity-70",
         active && "bg-secondary rounded-xl border-continuous",
       )}
     >
@@ -105,6 +107,15 @@ function DrawerHistoryItem({
       >
         {title}
       </Text>
+      <Pressable
+        onPress={onRemove}
+        accessibilityRole="button"
+        accessibilityLabel={`Remove ${title} from history`}
+        hitSlop={8}
+        className="p-1.5 active:opacity-50"
+      >
+        <Icon icon={X} className="w-4 h-4 text-muted-foreground" />
+      </Pressable>
     </Pressable>
   );
 }
@@ -114,7 +125,7 @@ export function DrawerContent({
 }: {
   onNavigate: (path: Href) => void;
 }) {
-  const { history, clearHistory } = useHistory();
+  const { history, clearHistory, removeWord } = useHistory();
   const activeWord = activeWordFromPath(usePathname());
 
   return (
@@ -177,6 +188,7 @@ export function DrawerContent({
                   params: { word: word.toLowerCase() },
                 })
               }
+              onRemove={() => removeWord(word)}
             />
           ))
         )}
