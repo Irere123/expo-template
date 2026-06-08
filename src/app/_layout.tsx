@@ -109,8 +109,9 @@ function StackLayout() {
         dangerouslySingular
         options={{
           // The on-screen hero already says "Dictionary"; keep the bar empty
-          // so only the drawer (menu) button shows.
-          headerTitle: () => null,
+          // so only the drawer (menu) button shows. Use an empty string (not a
+          // headerTitle component) so the native header renders normally.
+          title: "",
           animation: "none",
           gestureEnabled: false,
         }}
@@ -120,8 +121,11 @@ function StackLayout() {
         name="word/[word]"
         options={{
           // The headword is shown large in the screen body, so the header
-          // carries only the back button — no duplicated title.
-          headerTitle: () => null,
+          // carries only the back button — no duplicated title. An empty
+          // string title keeps the native back button; a headerTitle function
+          // returning null can suppress it on iOS.
+          title: "",
+          headerBackTitle: "",
           headerLargeTitleShadowVisible: false,
         }}
       />
