@@ -46,6 +46,7 @@ export default function SearchScreen() {
     setError(null);
     Keyboard.dismiss();
     openWord(query);
+    setQuery("");
   };
 
   return (
