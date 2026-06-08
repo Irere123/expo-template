@@ -32,7 +32,8 @@
       ],
       "expo-asset",
       "expo-font",
-      "expo-system-ui"
+      "expo-system-ui",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -1,131 +1,148 @@
-import { Link } from "expo-router";
-import type { LucideIcon } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { BookOpenText, ChevronRight, Clock, Search } from "lucide-react-native";
+import { useState } from "react";
 import {
-  ArrowRight,
-  ChevronRight,
-  List,
-  Settings,
-  Sparkles,
-  Star,
-} from "lucide-react-native";
-import { Pressable, ScrollView, Text, View } from "react-native";
+  Keyboard,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 import { Icon } from "@/components/icon";
 import { MainHeader } from "@/components/main-header";
-import { formatTimeAgo, MOCK_ITEMS } from "@/utils/mock-items";
+import { useHistory } from "@/utils/search-history";
 
-const starred = MOCK_ITEMS.filter((item) => item.starred);
+export default function SearchScreen() {
+  const router = useRouter();
+  const { history, clearHistory } = useHistory();
+  const [query, setQuery] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-export default function HomeScreen() {
+  const openWord = (raw: string) => {
+    const word = raw.trim().toLowerCase();
+    if (!word) return;
+    router.push({ pathname: "/word/[word]", params: { word } });
+  };
+
+  const submit = () => {
+    // Validate that the search field is not empty before navigating.
+    if (!query.trim()) {
+      setError("Please enter a word to search.");
+      return;
+    }
+    setError(null);
+    Keyboard.dismiss();
+    openWord(query);
+  };
+
   return (
     <>
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"
         contentContainerClassName="android:pb-safe pb-10"
+        keyboardShouldPersistTaps="handled"
       >
         {/* Hero */}
-        <View className="px-5 pt-4 pb-6">
+        <View className="px-5 pt-4 pb-5">
           <View className="w-12 h-12 rounded-2xl bg-foreground items-center justify-center mb-4 border-continuous">
-            <Icon icon={Sparkles} className="w-6 h-6 text-background" />
+            <Icon icon={BookOpenText} className="w-6 h-6 text-background" />
           </View>
           <Text className="text-[28px] font-bold text-foreground">
-            Welcome
+            Dictionary
           </Text>
           <Text className="text-[17px] text-muted-foreground mt-1 leading-snug">
-            A native Expo starter for iOS and Android. Edit this screen in
-            src/app/index.tsx.
+            Search any English word for meanings, pronunciations, and example
+            sentences.
           </Text>
         </View>
 
-        {/* Quick links */}
-        <View className="px-5 gap-3">
-          <QuickLink
-            href="/items"
-            icon={List}
-            title="Browse items"
-            subtitle="List + detail example"
-          />
-          <QuickLink
-            href="/(settings)/settings"
-            icon={Settings}
-            title="Settings"
-            subtitle="Profile, appearance, and more"
-          />
+        {/* Search box */}
+        <View className="px-5">
+          <View className="flex-row items-center gap-2 rounded-xl bg-muted px-3 py-2.5 border-continuous">
+            <Icon icon={Search} className="h-4 w-4 text-muted-foreground" />
+            <TextInput
+              value={query}
+              onChangeText={(text) => {
+                setQuery(text);
+                if (error) setError(null);
+              }}
+              onSubmitEditing={submit}
+              placeholder="Search a word"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
+              className="min-h-6 flex-1 p-0 text-[17px] text-foreground"
+              placeholderTextColorClassName="accent-muted-foreground"
+              cursorColorClassName="accent-foreground"
+              selectionColorClassName="accent-foreground"
+              underlineColorAndroidClassName="accent-transparent"
+            />
+          </View>
+
+          {error && (
+            <Text className="text-[13px] text-red-500 mt-2 ml-1">{error}</Text>
+          )}
+
+          <Pressable
+            onPress={submit}
+            accessibilityRole="button"
+            className="bg-foreground rounded-xl mt-3 py-3.5 items-center active:opacity-80 border-continuous"
+          >
+            <Text className="text-[17px] font-semibold text-background">
+              Search
+            </Text>
+          </Pressable>
         </View>
 
-        {/* Starred preview */}
-        {starred.length > 0 && (
+        {/* Recent searches */}
+        {history.length > 0 ? (
           <View className="mt-8">
             <View className="flex-row items-center justify-between px-5 pb-2">
               <Text className="text-[13px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Starred
+                Recent searches
               </Text>
-              <Link href="/items" asChild>
-                <Pressable className="flex-row items-center gap-1 active:opacity-60">
-                  <Text className="text-[13px] text-muted-foreground">All</Text>
-                  <Icon
-                    icon={ArrowRight}
-                    className="w-3.5 h-3.5 text-muted-foreground"
-                  />
-                </Pressable>
-              </Link>
+              <Pressable
+                onPress={clearHistory}
+                accessibilityRole="button"
+                className="active:opacity-60"
+              >
+                <Text className="text-[13px] text-muted-foreground">Clear</Text>
+              </Pressable>
             </View>
-            {starred.map((item) => (
-              <Link key={item.id} href={`/item/${item.id}`} asChild>
-                <Pressable className="flex-row items-center px-5 py-3.5 gap-3.5 active:bg-muted">
-                  <Icon icon={Star} className="w-4 h-4 text-yellow-500" />
-                  <View className="flex-1">
-                    <Text
-                      numberOfLines={1}
-                      className="text-[17px] text-foreground"
-                    >
-                      {item.title}
-                    </Text>
-                    <Text className="text-[13px] text-muted-foreground">
-                      {formatTimeAgo(item.daysAgo)}
-                    </Text>
-                  </View>
-                  <Icon
-                    icon={ChevronRight}
-                    className="w-3.5 h-3.5 text-muted-foreground"
-                  />
-                </Pressable>
-              </Link>
+            {history.map((word) => (
+              <Pressable
+                key={word}
+                onPress={() => openWord(word)}
+                className="flex-row items-center px-5 py-3.5 gap-3.5 active:bg-muted"
+              >
+                <Icon icon={Clock} className="w-4 h-4 text-muted-foreground" />
+                <Text
+                  numberOfLines={1}
+                  className="flex-1 text-[17px] text-foreground capitalize"
+                >
+                  {word}
+                </Text>
+                <Icon
+                  icon={ChevronRight}
+                  className="w-3.5 h-3.5 text-muted-foreground"
+                />
+              </Pressable>
             ))}
+          </View>
+        ) : (
+          <View className="items-center px-10 pt-16 gap-2">
+            <Icon icon={Search} className="w-9 h-9 text-muted-foreground" />
+            <Text className="text-[15px] text-muted-foreground text-center">
+              Your searched words will appear here.
+            </Text>
           </View>
         )}
       </ScrollView>
+
       <MainHeader />
     </>
-  );
-}
-
-function QuickLink({
-  href,
-  icon,
-  title,
-  subtitle,
-}: {
-  href: string;
-  icon: LucideIcon;
-  title: string;
-  subtitle: string;
-}) {
-  return (
-    <Link href={href as any} asChild>
-      <Pressable className="flex-row items-center gap-3.5 bg-secondary rounded-xl px-4 py-3.5 active:bg-muted border-continuous">
-        <View className="w-9 h-9 rounded-full bg-muted items-center justify-center">
-          <Icon icon={icon} className="w-5 h-5 text-foreground" />
-        </View>
-        <View className="flex-1">
-          <Text className="text-[17px] font-medium text-foreground">
-            {title}
-          </Text>
-          <Text className="text-[13px] text-muted-foreground">{subtitle}</Text>
-        </View>
-        <Icon icon={ChevronRight} className="w-4 h-4 text-muted-foreground" />
-      </Pressable>
-    </Link>
   );
 }

@@ -10,14 +10,17 @@ import {
   DefaultTheme,
   ThemeProvider as RNTheme,
 } from "@react-navigation/native";
+import { setAudioModeAsync } from "expo-audio";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import { useColorScheme } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaListener } from "react-native-safe-area-context";
 import { Uniwind, useCSSVariable } from "uniwind";
 
+import { HistoryProvider } from "@/utils/search-history";
 import { useSystemBackgroundColor } from "@/utils/use-system-background-color";
 
 const GLASS = isLiquidGlassAvailable();
@@ -39,12 +42,19 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
+  // Allow pronunciations to play even when the device is on silent mode.
+  useEffect(() => {
+    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+  }, []);
+
   return (
     <ThemeProvider>
       <KeyboardProvider>
-        <DrawerProvider>
-          <RootDrawer />
-        </DrawerProvider>
+        <HistoryProvider>
+          <DrawerProvider>
+            <RootDrawer />
+          </DrawerProvider>
+        </HistoryProvider>
         {process.env.EXPO_OS !== "ios" && <StatusBar style="auto" />}
       </KeyboardProvider>
     </ThemeProvider>
@@ -67,9 +77,6 @@ function RootDrawer() {
           onNavigate={(path) => {
             closeDrawer();
             router.replace(path, { withAnchor: true });
-          }}
-          onOpenModal={(path) => {
-            router.navigate(path);
           }}
         />
       }
@@ -101,35 +108,17 @@ function StackLayout() {
         name="index"
         dangerouslySingular
         options={{
-          title: "Acme",
+          title: "Dictionary",
           animation: "none",
           gestureEnabled: false,
         }}
       />
 
       <Stack.Screen
-        name="items"
+        name="word/[word]"
         options={{
-          title: "Items",
-          animation: "none",
+          title: "Word",
           headerLargeTitleShadowVisible: false,
-          gestureEnabled: false,
-        }}
-      />
-
-      <Stack.Screen
-        name="item/[id]"
-        options={{
-          title: "Item",
-          headerLargeTitleShadowVisible: false,
-        }}
-      />
-
-      <Stack.Screen
-        name="(settings)"
-        options={{
-          presentation: IS_ANDROID ? undefined : "modal",
-          headerShown: false,
         }}
       />
     </Stack>

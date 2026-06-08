@@ -1,15 +1,12 @@
 import "@/global.css";
 
-import { Icon } from "@/components/icon";
-import { TouchableGlass } from "@/components/touchable-glass";
 import { SafeAreaView } from "@/components/tw";
-import { MOCK_ITEMS } from "@/utils/mock-items";
+import { useHistory } from "@/utils/search-history";
 import { cn } from "@/utils/tailwind";
 import type { Href } from "expo-router";
-import { Plus } from "lucide-react-native";
 
 import React, { createContext, use, useCallback, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 type DrawerContextValue = {
   isOpen: boolean;
@@ -79,10 +76,8 @@ function DrawerRecentItem({
       <Text
         numberOfLines={1}
         className={cn(
-          `text-[15px]`,
-          active
-            ? "text-foreground"
-            : "text-muted-foreground",
+          `text-[15px] capitalize`,
+          active ? "text-foreground" : "text-muted-foreground",
         )}
       >
         {title}
@@ -93,11 +88,11 @@ function DrawerRecentItem({
 
 export function DrawerContent({
   onNavigate,
-  onOpenModal,
 }: {
   onNavigate: (path: Href) => void;
-  onOpenModal: (path: Href) => void;
 }) {
+  const { history, clearHistory } = useHistory();
+
   return (
     <SafeAreaView
       // NOTE: Some issue with uniwind that prevents updates for this component.
@@ -107,69 +102,48 @@ export function DrawerContent({
       {/* Header */}
       <View className="px-4 pt-2 pb-3">
         <Text className="text-[28px] font-bold text-foreground">
-          Acme
+          Dictionary
         </Text>
       </View>
 
-      {/* Nav + recent items */}
+      {/* Nav + search history */}
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 8 }}
       >
-        <DrawerNavItem label="Home" onPress={() => onNavigate("/")} />
-        <DrawerNavItem label="Items" onPress={() => onNavigate("/items")} />
-        <DrawerNavItem
-          label="Settings"
-          onPress={() => {
-            if (process.env.EXPO_OS === "android") {
-              onNavigate("/(settings)/settings");
-            }
-            onOpenModal("/(settings)/settings");
-          }}
-        />
+        <DrawerNavItem label="Search" onPress={() => onNavigate("/")} />
 
-        {/* Recents */}
-        <Text className="text-[13px] font-semibold text-muted-foreground px-6 pt-5 pb-1.5">
-          Recents
-        </Text>
-        {MOCK_ITEMS.slice(0, 6).map((item) => (
-          <DrawerRecentItem
-            key={item.id}
-            title={item.title}
-            onPress={() => onNavigate(`/item/${item.id}`)}
-          />
-        ))}
-      </ScrollView>
-
-      {/* Footer */}
-      <View
-        className="flex-row items-center px-4 py-3 border-t border-border"
-        style={{ borderTopWidth: StyleSheet.hairlineWidth }}
-      >
-        <TouchableGlass
-          onPress={() => onOpenModal("/(settings)/settings")}
-          className="rounded-full p-2 flex-row items-center gap-2.5 active:opacity-60"
-        >
-          <View className="w-8 h-8 rounded-full bg-muted items-center justify-center">
-            <Text className="text-[13px] font-semibold text-foreground">
-              JD
-            </Text>
-          </View>
-          <Text className="text-sm text-foreground">
-            Jane Doe
+        {/* Search history */}
+        <View className="flex-row items-center justify-between px-6 pt-5 pb-1.5">
+          <Text className="text-[13px] font-semibold text-muted-foreground">
+            History
           </Text>
-        </TouchableGlass>
-        <View className="flex-1" />
-        <TouchableGlass
-          onPress={() => onNavigate("/items")}
-          className="w-10 h-10 rounded-full bg-foreground active:bg-muted items-center justify-center"
-        >
-          <Icon
-            icon={Plus}
-            className="w-6 h-6 text-background"
-          />
-        </TouchableGlass>
-      </View>
+          {history.length > 0 && (
+            <Pressable onPress={clearHistory} className="active:opacity-60">
+              <Text className="text-[13px] text-muted-foreground">Clear</Text>
+            </Pressable>
+          )}
+        </View>
+
+        {history.length === 0 ? (
+          <Text className="text-[15px] text-muted-foreground px-6 pt-1">
+            No searches yet.
+          </Text>
+        ) : (
+          history.map((word) => (
+            <DrawerRecentItem
+              key={word}
+              title={word}
+              onPress={() =>
+                onNavigate({
+                  pathname: "/word/[word]",
+                  params: { word: word.toLowerCase() },
+                })
+              }
+            />
+          ))
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
