@@ -18,6 +18,7 @@ import { useBookmarks } from "@/utils/bookmarks";
 export function BookmarkButton({ word }: { word: string }) {
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const foreground = useCSSVariable("--app-foreground") as string;
+  const primary = useCSSVariable("--app-primary") as string;
   const active = isBookmarked(word);
 
   const scale = useSharedValue(1);
@@ -45,8 +46,8 @@ export function BookmarkButton({ word }: { word: string }) {
       <Animated.View style={style}>
         <Bookmark
           size={23}
-          color={foreground}
-          fill={active ? foreground : "transparent"}
+          color={active ? primary : foreground}
+          fill={active ? primary : "transparent"}
           strokeWidth={2}
         />
       </Animated.View>

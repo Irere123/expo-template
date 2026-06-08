@@ -60,8 +60,8 @@ export default function SearchScreen() {
       >
         {/* Hero */}
         <View className="px-5 pt-4 pb-5">
-          <View className="w-12 h-12 rounded-2xl bg-secondary items-center justify-center mb-4 border-continuous">
-            <Icon icon={BookOpenText} className="w-6 h-6 text-foreground" />
+          <View className="w-12 h-12 rounded-2xl bg-primary items-center justify-center mb-4 border-continuous">
+            <Icon icon={BookOpenText} className="w-6 h-6 text-primary-foreground" />
           </View>
           <Text
             style={fonts.display}
@@ -104,9 +104,9 @@ export default function SearchScreen() {
           <Pressable
             onPress={submit}
             accessibilityRole="button"
-            className="bg-foreground rounded-2xl mt-3 h-[52px] items-center justify-center active:opacity-80 border-continuous"
+            className="bg-primary rounded-2xl mt-3 h-[52px] items-center justify-center active:opacity-80 border-continuous"
           >
-            <Text className="text-[17px] font-semibold text-background">
+            <Text className="text-[17px] font-semibold text-primary-foreground">
               Search
             </Text>
           </Pressable>

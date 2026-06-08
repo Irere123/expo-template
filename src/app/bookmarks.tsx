@@ -96,9 +96,9 @@ export default function BookmarksScreen() {
             <Pressable
               onPress={() => router.navigate("/")}
               accessibilityRole="button"
-              className="mt-2 rounded-2xl bg-foreground px-5 h-[48px] items-center justify-center active:opacity-80 border-continuous"
+              className="mt-2 rounded-2xl bg-primary px-5 h-[48px] items-center justify-center active:opacity-80 border-continuous"
             >
-              <Text className="text-[15px] font-semibold text-background">
+              <Text className="text-[15px] font-semibold text-primary-foreground">
                 Search words
               </Text>
             </Pressable>

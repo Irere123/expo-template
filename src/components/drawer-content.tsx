@@ -136,8 +136,8 @@ export function DrawerContent({
     >
       {/* Header */}
       <View className="flex-row items-center gap-3 px-4 pt-2 pb-3">
-        <View className="w-11 h-11 rounded-2xl bg-secondary items-center justify-center border-continuous">
-          <Icon icon={BookOpen} className="w-5 h-5 text-foreground" />
+        <View className="w-11 h-11 rounded-2xl bg-primary items-center justify-center border-continuous">
+          <Icon icon={BookOpen} className="w-5 h-5 text-primary-foreground" />
         </View>
         <Text
           style={fonts.title}

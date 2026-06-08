@@ -281,17 +281,17 @@ function ActionButton({
       onPress={onPress}
       accessibilityRole="button"
       className={`flex-1 h-[52px] flex-row items-center justify-center gap-2 rounded-2xl border-continuous ${
-        primary ? "bg-foreground active:opacity-80" : "bg-secondary active:opacity-70"
+        primary ? "bg-primary active:opacity-80" : "bg-secondary active:opacity-70"
       }`}
     >
       {icon && (
         <Icon
           icon={icon}
-          className={`w-[18px] h-[18px] ${primary ? "text-background" : "text-foreground"}`}
+          className={`w-[18px] h-[18px] ${primary ? "text-primary-foreground" : "text-foreground"}`}
         />
       )}
       <Text
-        className={`text-[17px] font-semibold ${primary ? "text-background" : "text-foreground"}`}
+        className={`text-[17px] font-semibold ${primary ? "text-primary-foreground" : "text-foreground"}`}
       >
         {label}
       </Text>
