@@ -5,11 +5,11 @@ import {
 } from "@/components/drawer-content";
 import { DrawerLayout } from "@/components/drawer-layout";
 import "@/global.css";
+import { Figtree_700Bold } from "@expo-google-fonts/figtree";
 import {
   Fraunces_400Regular,
   Fraunces_400Regular_Italic,
   Fraunces_600SemiBold,
-  Fraunces_700Bold,
   useFonts,
 } from "@expo-google-fonts/fraunces";
 import {
@@ -50,10 +50,10 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
+    Figtree_700Bold,
     Fraunces_400Regular,
     Fraunces_400Regular_Italic,
     Fraunces_600SemiBold,
-    Fraunces_700Bold,
   });
 
   // Allow pronunciations to play even when the device is on silent mode.
@@ -61,7 +61,7 @@ export default function RootLayout() {
     setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
   }, []);
 
-  // Hold the UI until the serif is ready so headwords don't reflow on first
+  // Hold the UI until the fonts are ready so headwords don't reflow on first
   // paint. If loading fails we render anyway and fall back to the system font.
   if (!fontsLoaded && !fontError) return null;
 

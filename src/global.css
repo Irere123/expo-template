@@ -54,6 +54,15 @@
   --shadow-card: var(--app-shadow-card);
   --shadow-float: var(--app-shadow-float);
 
+  /* App fonts — kept in sync with the families loaded in app/_layout.tsx
+     (useFonts) and applied in src/utils/fonts.ts. Single family names so React
+     Native resolves them; an unavailable family falls back to the system font.
+     UI chrome stays on the system sans (--font-sans below). */
+  --font-display: Figtree_700Bold;
+  --font-title: Fraunces_600SemiBold;
+  --font-reading: Fraunces_400Regular;
+  --font-reading-italic: Fraunces_400Regular_Italic;
+
   --animate-fade-up: fade-up 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
