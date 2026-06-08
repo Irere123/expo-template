@@ -7,7 +7,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon } from "@/components/icon";
 import { MainHeader } from "@/components/main-header";
 import { useBookmarks } from "@/utils/bookmarks";
-import { fonts } from "@/utils/fonts";
 
 export default function BookmarksScreen() {
   const router = useRouter();
@@ -29,26 +28,8 @@ export default function BookmarksScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
-        {/* Hero */}
-        <View className="px-5 pt-4 pb-5">
-          <View className="w-12 h-12 rounded-2xl bg-secondary items-center justify-center mb-4 border-continuous">
-            <Icon icon={Bookmark} className="w-6 h-6 text-foreground" />
-          </View>
-          <Text
-            style={fonts.display}
-            className="text-[34px] font-bold tracking-tight text-foreground leading-tight"
-          >
-            Bookmarks
-          </Text>
-          <Text className="text-[15px] text-muted-foreground mt-2 leading-snug">
-            {bookmarks.length > 0
-              ? `${bookmarks.length} saved ${bookmarks.length === 1 ? "word" : "words"}.`
-              : "Your saved words live here."}
-          </Text>
-        </View>
-
         {bookmarks.length > 0 ? (
-          <View>
+          <View className="pt-4">
             <View className="flex-row items-center justify-between px-5 mb-1">
               <Text className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Saved
