@@ -51,7 +51,7 @@ export default function SearchScreen() {
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerClassName="android:pb-safe pb-10"
+        contentContainerClassName="android:pb-safe pb-24"
         keyboardShouldPersistTaps="handled"
       >
         {/* Hero */}
