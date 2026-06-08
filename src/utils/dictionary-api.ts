@@ -45,7 +45,12 @@ export type WordEntry = {
 
 /* ─── Errors ─── */
 
-export type DictionaryErrorKind = "empty" | "not-found" | "network" | "unknown";
+export type DictionaryErrorKind =
+  | "empty"
+  | "invalid"
+  | "not-found"
+  | "network"
+  | "unknown";
 
 /** A single error type carrying a user-facing message and a machine `kind`. */
 export class DictionaryError extends Error {
@@ -56,6 +61,65 @@ export class DictionaryError extends Error {
     this.name = "DictionaryError";
     this.kind = kind;
   }
+}
+
+/* ─── Input validation ─── */
+
+export type WordValidation =
+  | { ok: true; word: string }
+  | { ok: false; kind: "empty" | "invalid"; message: string };
+
+// Longest word in major English dictionaries is 45 letters; allow a little
+// headroom and reject anything beyond as not a real lookup.
+const MAX_WORD_LENGTH = 60;
+
+// A single token of Latin letters (incl. common accented ranges for loanwords
+// like "naïve" / "café"), optionally joined by internal hyphens or apostrophes
+// ("self-aware", "o'clock"). No leading/trailing separators, digits or symbols.
+const WORD_PATTERN =
+  /^[A-Za-zÀ-ɏ]+(?:['’‐‑-][A-Za-zÀ-ɏ]+)*$/;
+
+/**
+ * Validate and normalise a user-entered search term. Returns the cleaned,
+ * lower-cased word on success, or a typed failure with a user-facing message.
+ * Centralised so the search box and the data layer enforce the same rules.
+ */
+export function validateWord(raw: string): WordValidation {
+  const input = (raw ?? "").normalize("NFC").trim().replace(/\s+/g, " ");
+
+  if (!input) {
+    return { ok: false, kind: "empty", message: "Please enter a word to search." };
+  }
+  if (/\s/.test(input)) {
+    return {
+      ok: false,
+      kind: "invalid",
+      message: "Enter a single word, without spaces.",
+    };
+  }
+  if (input.length > MAX_WORD_LENGTH) {
+    return {
+      ok: false,
+      kind: "invalid",
+      message: "That's a bit long for a single word.",
+    };
+  }
+  if (/\d/.test(input)) {
+    return {
+      ok: false,
+      kind: "invalid",
+      message: "Words don't contain numbers.",
+    };
+  }
+  if (!WORD_PATTERN.test(input)) {
+    return {
+      ok: false,
+      kind: "invalid",
+      message: "Use letters only — no symbols.",
+    };
+  }
+
+  return { ok: true, word: input.toLowerCase() };
 }
 
 /* ─── In-memory cache ─── */
@@ -71,14 +135,15 @@ export function getCachedWord(word: string): WordEntry[] | undefined {
 /* ─── Fetching ─── */
 
 export async function fetchWord(rawWord: string): Promise<WordEntry[]> {
-  const word = rawWord.trim();
-
-  // Input validation: never hit the network with an empty query.
-  if (!word) {
-    throw new DictionaryError("empty", "Please enter a word to search.");
+  // Validate and normalise up front so we never hit the network with a bad
+  // query (empty, multi-word, numeric, symbols, absurd length).
+  const validation = validateWord(rawWord);
+  if (!validation.ok) {
+    throw new DictionaryError(validation.kind, validation.message);
   }
+  const word = validation.word;
 
-  const key = word.toLowerCase();
+  const key = word;
   const cached = cache.get(key);
   if (cached) return cached;
 

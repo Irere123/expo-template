@@ -20,7 +20,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Icon } from "@/components/icon";
 import { MainHeader } from "@/components/main-header";
-import { EXPLORE_WORDS, getWordOfTheDay } from "@/utils/dictionary-api";
+import {
+  EXPLORE_WORDS,
+  getWordOfTheDay,
+  validateWord,
+} from "@/utils/dictionary-api";
 import { fonts } from "@/utils/fonts";
 import { haptics } from "@/utils/haptics";
 import { useHistory } from "@/utils/search-history";
@@ -46,15 +50,17 @@ export default function SearchScreen() {
   };
 
   const submit = () => {
-    // Validate that the search field is not empty before navigating.
-    if (!query.trim()) {
+    // Strict validation: reject empty, multi-word, numeric, or symbol input
+    // with a clear, specific message before navigating.
+    const result = validateWord(query);
+    if (!result.ok) {
       haptics.warning();
-      setError("Please enter a word to search.");
+      setError(result.message);
       return;
     }
     setError(null);
     Keyboard.dismiss();
-    openWord(query);
+    openWord(result.word);
     setQuery("");
   };
 
@@ -99,7 +105,11 @@ export default function SearchScreen() {
                 placeholder="Search a word"
                 autoCapitalize="none"
                 autoCorrect={false}
+                autoComplete="off"
+                spellCheck={false}
+                maxLength={60}
                 returnKeyType="search"
+                submitBehavior="submit"
                 className="min-h-6 flex-1 p-0 text-[17px] text-foreground"
                 placeholderTextColorClassName="accent-muted-foreground"
                 cursorColorClassName="accent-foreground"
@@ -116,7 +126,13 @@ export default function SearchScreen() {
               </Pressable>
             </View>
             {error && (
-              <Text className="text-[13px] text-red-500 mt-2 ml-4">{error}</Text>
+              <Text
+                accessibilityLiveRegion="polite"
+                accessibilityRole="alert"
+                className="text-[13px] text-red-500 mt-2 ml-4"
+              >
+                {error}
+              </Text>
             )}
           </View>
         </Animated.View>

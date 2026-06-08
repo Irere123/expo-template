@@ -327,17 +327,21 @@ function ErrorState({
   const insets = useSafeAreaInsets();
   const notFound = error.kind === "not-found";
   const network = error.kind === "network";
+  const invalid = error.kind === "invalid" || error.kind === "empty";
 
-  const icon = notFound
-    ? SearchRemoveIcon
-    : network
-      ? WifiDisconnected01Icon
-      : Alert02Icon;
+  const icon =
+    notFound || invalid
+      ? SearchRemoveIcon
+      : network
+        ? WifiDisconnected01Icon
+        : Alert02Icon;
   const headline = notFound
     ? "No definitions found"
-    : network
-      ? "No connection"
-      : "Something went wrong";
+    : invalid
+      ? "Check your search"
+      : network
+        ? "No connection"
+        : "Something went wrong";
   const helper = notFound
     ? `We couldn't find “${word}”. Double-check the spelling or try another word.`
     : network
@@ -389,7 +393,7 @@ function ErrorState({
         className="px-5 pt-4 gap-3"
         style={{ paddingBottom: insets.bottom + 16 }}
       >
-        {notFound ? (
+        {notFound || invalid ? (
           <View className="flex-row gap-3">
             <ActionButton label="Go back" variant="secondary" onPress={onGoBack} />
             <ActionButton
