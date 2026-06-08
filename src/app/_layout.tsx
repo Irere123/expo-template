@@ -108,7 +108,9 @@ function StackLayout() {
         name="index"
         dangerouslySingular
         options={{
-          title: "Dictionary",
+          // The on-screen hero already says "Dictionary"; keep the bar empty
+          // so only the drawer (menu) button shows.
+          headerTitle: () => null,
           animation: "none",
           gestureEnabled: false,
         }}
@@ -117,7 +119,9 @@ function StackLayout() {
       <Stack.Screen
         name="word/[word]"
         options={{
-          title: "Word",
+          // The headword is shown large in the screen body, so the header
+          // carries only the back button — no duplicated title.
+          headerTitle: () => null,
           headerLargeTitleShadowVisible: false,
         }}
       />

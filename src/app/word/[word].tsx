@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { FileQuestion, RotateCw, SearchX, WifiOff } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
@@ -49,12 +49,8 @@ export default function WordScreen() {
     load();
   }, [load]);
 
-  const title = word ? word[0].toUpperCase() + word.slice(1) : "Word";
-
   return (
     <View className="flex-1 bg-background">
-      <Stack.Screen options={{ title, headerLargeTitleShadowVisible: false }} />
-
       {state.status === "loading" && <LoadingState word={word} />}
 
       {state.status === "error" && (

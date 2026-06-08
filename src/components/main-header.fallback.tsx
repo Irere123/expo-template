@@ -6,8 +6,9 @@ import { Icon } from "@/components/icon";
 import { useDrawer } from "./drawer-content";
 
 /**
- * Header for the Search (home) screen: a drawer toggle on the left. The screen
- * title comes from the Stack screen options in app/_layout.tsx.
+ * Header for the Search (home) screen: just a drawer (menu) toggle on the left.
+ * The bar carries no title — the hero in the screen body already reads
+ * "Dictionary".
  */
 export function MainHeader() {
   const { openDrawer } = useDrawer();
