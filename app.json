@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "expo-template",
-    "slug": "expo-template",
+    "name": "Dictionary App",
+    "slug": "dictionary-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "expo-template",
+    "scheme": "dictionary-app",
     "userInterfaceStyle": "automatic",
     "ios": {
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.revokslab.expo-template"
+      "bundleIdentifier": "com.revokslab.dictionary"
     },
     "android": {
       "predictiveBackGestureEnabled": false
