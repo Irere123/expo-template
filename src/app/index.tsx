@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { BookOpenText, ChevronRight, Clock, Search } from "lucide-react-native";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import {
   Keyboard,
   Platform,
@@ -128,25 +128,29 @@ export default function SearchScreen() {
           </View>
 
           {history.length > 0 ? (
-            history.map((word) => (
-              <Pressable
-                key={word}
-                onPress={() => openWord(word)}
-                accessibilityRole="button"
-                className="flex-row items-center px-5 py-4 gap-3 border-b border-border active:bg-muted"
-              >
-                <Icon icon={Clock} className="w-[18px] h-[18px] text-muted-foreground" />
-                <Text
-                  numberOfLines={1}
-                  className="flex-1 text-[17px] font-medium text-foreground capitalize"
+            history.map((word, index) => (
+              <Fragment key={word}>
+                <Pressable
+                  onPress={() => openWord(word)}
+                  accessibilityRole="button"
+                  className="flex-row items-center px-5 py-4 gap-3 active:bg-muted"
                 >
-                  {word}
-                </Text>
-                <Icon
-                  icon={ChevronRight}
-                  className="w-[18px] h-[18px] text-muted-foreground"
-                />
-              </Pressable>
+                  <Icon icon={Clock} className="w-[18px] h-[18px] text-muted-foreground" />
+                  <Text
+                    numberOfLines={1}
+                    className="flex-1 text-[17px] font-medium text-foreground capitalize"
+                  >
+                    {word}
+                  </Text>
+                  <Icon
+                    icon={ChevronRight}
+                    className="w-[18px] h-[18px] text-muted-foreground"
+                  />
+                </Pressable>
+                {index < history.length - 1 && (
+                  <View className="h-px bg-border mx-5" />
+                )}
+              </Fragment>
             ))
           ) : (
             <Text className="text-[15px] text-muted-foreground px-5 pt-1">
