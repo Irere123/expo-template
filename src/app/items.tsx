@@ -1,11 +1,12 @@
-import { useDrawer } from "@/components/drawer-content";
-import { Icon } from "@/components/icon";
-import { Image } from "@/components/tw";
-import { formatTimeAgo, type Item, MOCK_ITEMS } from "@/utils/mock-items";
 import { Link, Stack } from "expo-router";
 import { ChevronRight, Menu, Search, Star } from "lucide-react-native";
 import { useCallback, useMemo, useState } from "react";
 import { Alert, FlatList, Pressable, Text, TextInput, View } from "react-native";
+
+import { useDrawer } from "@/components/drawer-content";
+import { Icon } from "@/components/icon";
+import { Image } from "@/components/tw";
+import { formatTimeAgo, type Item, MOCK_ITEMS } from "@/utils/mock-items";
 
 type Filter = "all" | "starred";
 

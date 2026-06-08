@@ -1,6 +1,7 @@
-import { Icon } from "@/components/icon";
 import { Minus } from "lucide-react-native";
 import { View } from "react-native";
+
+import { Icon } from "@/components/icon";
 
 export function AndroidGrabber() {
   return (

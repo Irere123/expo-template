@@ -1,7 +1,5 @@
-import { Icon } from "@/components/icon";
-import { MainHeader } from "@/components/main-header";
-import { formatTimeAgo, MOCK_ITEMS } from "@/utils/mock-items";
 import { Link } from "expo-router";
+import type { LucideIcon } from "lucide-react-native";
 import {
   ArrowRight,
   ChevronRight,
@@ -10,8 +8,11 @@ import {
   Sparkles,
   Star,
 } from "lucide-react-native";
-import type { LucideIcon } from "lucide-react-native";
 import { Pressable, ScrollView, Text, View } from "react-native";
+
+import { Icon } from "@/components/icon";
+import { MainHeader } from "@/components/main-header";
+import { formatTimeAgo, MOCK_ITEMS } from "@/utils/mock-items";
 
 const starred = MOCK_ITEMS.filter((item) => item.starred);
 

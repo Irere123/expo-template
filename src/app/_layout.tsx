@@ -5,7 +5,6 @@ import {
 } from "@/components/drawer-content";
 import { DrawerLayout } from "@/components/drawer-layout";
 import "@/global.css";
-import { useSystemBackgroundColor } from "@/utils/use-system-background-color";
 import {
   DarkTheme,
   DefaultTheme,
@@ -18,6 +17,8 @@ import { useColorScheme } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaListener } from "react-native-safe-area-context";
 import { Uniwind, useCSSVariable } from "uniwind";
+
+import { useSystemBackgroundColor } from "@/utils/use-system-background-color";
 
 const GLASS = isLiquidGlassAvailable();
 const IS_ANDROID = process.env.EXPO_OS === "android";
