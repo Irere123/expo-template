@@ -12,11 +12,11 @@ Do NOT use CSS variables (e.g. `var(--app-muted)`) directly in inline `style` pr
 
 ## Verification
 
-This app requires a custom Expo development build and will not work in Expo Go. To verify the app:
+**Try Expo Go first** for day-to-day Android testing — fastest iteration, no native build required.
 
 - Use `npx serve-sim` to verify iOS and Apple platforms.
 
-## Metadata
+## MetadataW
 
 Manage Apple App Store metadata and screenshots with `npx eas-cli@latest metadata:pull` and `npx eas-cli@latest metadata:push`.
 
