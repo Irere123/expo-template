@@ -100,7 +100,13 @@ function RootDrawer() {
         <DrawerContent
           onNavigate={(path) => {
             closeDrawer();
-            router.replace(path, { withAnchor: true });
+            // Word details are sub-screens: push so they get a back button.
+            // Top-level destinations (Search, Bookmarks) switch in place.
+            if (typeof path === "object" && path.pathname === "/word/[word]") {
+              router.push(path);
+            } else {
+              router.replace(path, { withAnchor: true });
+            }
           }}
         />
       }
