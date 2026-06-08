@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { FileQuestion, RotateCw, SearchX, WifiOff } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCSSVariable } from "uniwind";
 
 import { AudioButton } from "@/components/audio-button";
+import { BookmarkButton } from "@/components/bookmark-button";
 import { Icon } from "@/components/icon";
 import {
   DictionaryError,
@@ -101,7 +102,16 @@ export default function WordScreen() {
       )}
 
       {state.status === "success" && (
-        <WordDetails entries={state.data} onSelectWord={onSelectWord} />
+        <>
+          <Stack.Screen
+            options={{
+              headerRight: () => (
+                <BookmarkButton word={state.data[0]?.word ?? word} />
+              ),
+            }}
+          />
+          <WordDetails entries={state.data} onSelectWord={onSelectWord} />
+        </>
       )}
     </View>
   );

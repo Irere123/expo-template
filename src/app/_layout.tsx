@@ -27,6 +27,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaListener } from "react-native-safe-area-context";
 import { Uniwind, useCSSVariable } from "uniwind";
 
+import { BookmarksProvider } from "@/utils/bookmarks";
 import { HistoryProvider } from "@/utils/search-history";
 import { ThemePreferenceProvider } from "@/utils/theme";
 import { useSystemBackgroundColor } from "@/utils/use-system-background-color";
@@ -71,9 +72,11 @@ export default function RootLayout() {
       <ThemeProvider>
         <KeyboardProvider>
           <HistoryProvider>
-            <DrawerProvider>
-              <RootDrawer />
-            </DrawerProvider>
+            <BookmarksProvider>
+              <DrawerProvider>
+                <RootDrawer />
+              </DrawerProvider>
+            </BookmarksProvider>
           </HistoryProvider>
           {process.env.EXPO_OS !== "ios" && <StatusBar style="auto" />}
         </KeyboardProvider>
@@ -148,6 +151,17 @@ function StackLayout() {
           title: "",
           headerBackTitle: "",
           headerLargeTitleShadowVisible: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="bookmarks"
+        options={{
+          // Top-level drawer destination (like Search): empty header title, the
+          // body carries the "Bookmarks" hero. Menu + theme toggle come from
+          // <MainHeader/> rendered in the screen.
+          title: "",
+          animation: "none",
         }}
       />
     </Stack>

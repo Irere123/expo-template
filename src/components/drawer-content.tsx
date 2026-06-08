@@ -8,7 +8,7 @@ import { cn } from "@/utils/tailwind";
 import type { Href } from "expo-router";
 import { usePathname } from "expo-router";
 
-import { BookOpen, Clock, Search } from "lucide-react-native";
+import { Bookmark, BookOpen, Clock, Search } from "lucide-react-native";
 import React, { createContext, use, useCallback, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
@@ -139,6 +139,11 @@ export function DrawerContent({
       {/* Nav + search history */}
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 8 }}>
         <DrawerNavItem label="Search" icon={Search} onPress={() => onNavigate("/")} />
+        <DrawerNavItem
+          label="Bookmarks"
+          icon={Bookmark}
+          onPress={() => onNavigate("/bookmarks")}
+        />
 
         {/* Search history */}
         <View className="flex-row items-center justify-between px-6 pt-6 pb-2">
