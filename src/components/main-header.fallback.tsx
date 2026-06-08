@@ -3,12 +3,13 @@ import { Menu } from "lucide-react-native";
 import { Pressable } from "react-native";
 
 import { Icon } from "@/components/icon";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useDrawer } from "./drawer-content";
 
 /**
- * Header for the Search (home) screen: just a drawer (menu) toggle on the left.
- * The bar carries no title — the hero in the screen body already reads
- * "Dictionary".
+ * Header for the Search (home) screen: a drawer (menu) toggle on the left and
+ * the light/dark theme toggle on the right. The bar carries no title — the hero
+ * in the screen body already reads "Dictionary".
  */
 export function MainHeader() {
   const { openDrawer } = useDrawer();
@@ -26,6 +27,7 @@ export function MainHeader() {
             <Icon icon={Menu} className="w-6 h-6 text-foreground" />
           </Pressable>
         ),
+        headerRight: () => <ThemeToggle />,
       }}
     />
   );
