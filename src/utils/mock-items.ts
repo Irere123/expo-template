@@ -23,8 +23,8 @@ export const MOCK_ITEMS: Item[] = [
   {
     id: "2",
     title: "Platform-adaptive navigation",
-    subtitle: "Drawer on native, sidebar on web",
-    body: "The template ships with a gesture-driven drawer on iOS and Android and a collapsible sidebar on web — all from a single codebase.",
+    subtitle: "Drawer on iOS and Android",
+    body: "The template ships with a gesture-driven drawer on iOS and Android from a native-only codebase.",
     daysAgo: 1,
     starred: false,
   },
@@ -63,8 +63,8 @@ export const MOCK_ITEMS: Item[] = [
   {
     id: "7",
     title: "Native UI controls",
-    subtitle: "@expo/ui, haptics",
-    body: "Reach for SwiftUI menus, toolbars, and haptic feedback when you want the experience to feel truly native.",
+    subtitle: "Haptics and native feedback",
+    body: "Reach for platform haptics, native gestures, and Expo modules when you want the experience to feel truly native.",
     daysAgo: 9,
     starred: false,
   },

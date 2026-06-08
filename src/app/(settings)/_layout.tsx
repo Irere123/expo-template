@@ -1,6 +1,9 @@
+import { Icon } from "@/components/icon";
 import * as Application from "expo-application";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Stack, useRouter } from "expo-router";
+import { Info, X } from "lucide-react-native";
+import { Alert, Pressable } from "react-native";
 import { useCSSVariable } from "uniwind";
 
 const GLASS = isLiquidGlassAvailable();
@@ -10,6 +13,19 @@ export default function SettingsLayout() {
 
   const appForeground = useCSSVariable("--app-foreground") as string;
   const appBackground = useCSSVariable("--app-background") as string;
+
+  const showAppInfo = () => {
+    const name = Application.applicationName ?? "expo-template";
+    const version = Application.nativeApplicationVersion ?? "1.0.0";
+    const build = Application.nativeBuildVersion ?? "dev";
+
+    Alert.alert(name, `Version ${version} (${build})`, [
+      { text: "Terms of Service" },
+      { text: "Privacy Policy" },
+      { text: "Help & Support" },
+      { text: "OK", style: "cancel" },
+    ]);
+  };
 
   return (
     <Stack
@@ -28,31 +44,28 @@ export default function SettingsLayout() {
         name="settings"
         options={{
           title: "Settings",
-          headerLeft: () => null,
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.back()}
+              accessibilityLabel="Close settings"
+              accessibilityRole="button"
+              className="p-2 -ml-1 active:opacity-60"
+            >
+              <Icon icon={X} className="h-6 w-6 text-foreground" />
+            </Pressable>
+          ),
+          headerRight: () => (
+            <Pressable
+              onPress={showAppInfo}
+              accessibilityLabel="Show app information"
+              accessibilityRole="button"
+              className="p-2 -mr-1 active:opacity-60"
+            >
+              <Icon icon={Info} className="h-6 w-6 text-foreground" />
+            </Pressable>
+          ),
         }}
-      >
-        <Stack.Toolbar placement="left">
-          <Stack.Toolbar.Button icon="xmark" onPress={() => router.back()} />
-        </Stack.Toolbar>
-        <Stack.Toolbar placement="right">
-          <Stack.Toolbar.Menu icon="info.circle">
-            <Stack.Toolbar.MenuAction icon={"app"}>
-              {`${Application.applicationName} v${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}
-            </Stack.Toolbar.MenuAction>
-            <Stack.Toolbar.Menu inline>
-              <Stack.Toolbar.MenuAction icon="arrow.up.forward.square">
-                Terms of Service
-              </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="arrow.up.forward.square">
-                Privacy Policy
-              </Stack.Toolbar.MenuAction>
-            </Stack.Toolbar.Menu>
-            <Stack.Toolbar.MenuAction icon="arrow.up.forward.square">
-              Help & Support
-            </Stack.Toolbar.MenuAction>
-          </Stack.Toolbar.Menu>
-        </Stack.Toolbar>
-      </Stack.Screen>
+      />
       <Stack.Screen
         name="profile"
         options={{

@@ -1,4 +1,4 @@
-Use `bunx expo install` to add dependencies.
+Use `pnpm expo install` to add dependencies.
 
 When searching Apple docs, replace https://developer.apple.com with https://sosumi.ai to read as markdown. e.g. https://sosumi.ai/documentation/Xcode/configuring-app-groups instead of https://developer.apple.com/documentation/xcode/configuring-app-groups
 
@@ -15,8 +15,8 @@ Do NOT use CSS variables (e.g. `var(--app-muted)`) directly in inline `style` pr
 This app requires a custom Expo development build and will not work in Expo Go. To verify the app:
 
 - Use `npx serve-sim` to verify iOS and Apple platforms.
-- Use `npx agent-browser` to verify on web.
 
 ## Metadata
 
 Manage Apple App Store metadata and screenshots with `npx eas-cli@latest metadata:pull` and `npx eas-cli@latest metadata:push`.
+

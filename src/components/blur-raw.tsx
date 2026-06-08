@@ -2,8 +2,7 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 
-import type { BlurViewProps } from "expo-blur";
-import { NativeBlurView } from "expo-blur/build/NativeBlurModule";
+import { BlurView, type BlurViewProps } from "expo-blur";
 
 export function BlurViewRawBackdrop({
   tint = "default",
@@ -15,16 +14,15 @@ export function BlurViewRawBackdrop({
   ...props
 }: BlurViewProps) {
   return (
-    <NativeBlurView
+    <BlurView
       tint={tint}
       intensity={intensity}
       blurReductionFactor={blurReductionFactor}
       experimentalBlurMethod={experimentalBlurMethod}
-      style={{
-        ...StyleSheet.absoluteFill,
-        overflow: "hidden",
-      }}
+      style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}
       {...props}
-    />
+    >
+      {children}
+    </BlurView>
   );
 }

@@ -55,7 +55,6 @@ function TouchableGlassFallback({
   onPress,
   onPressIn,
   onPressOut,
-  ref,
   disabled,
 
   children,
@@ -91,7 +90,6 @@ function TouchableGlassFallback({
       disabled={disabled}
     >
       <Animated.View
-        ref={ref}
         className={className}
         {...safeViewProps}
         style={[

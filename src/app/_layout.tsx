@@ -6,17 +6,16 @@ import {
 import { DrawerLayout } from "@/components/drawer-layout";
 import "@/global.css";
 import { useSystemBackgroundColor } from "@/utils/use-system-background-color";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
-import { Stack, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { KeyboardProvider } from "react-native-keyboard-controller";
-
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider as RNTheme,
-} from "expo-router/react-navigation";
+} from "@react-navigation/native";
+import { isLiquidGlassAvailable } from "expo-glass-effect";
+import { Stack, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaListener } from "react-native-safe-area-context";
 import { Uniwind, useCSSVariable } from "uniwind";
 

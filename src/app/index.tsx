@@ -32,8 +32,8 @@ export default function HomeScreen() {
             Welcome
           </Text>
           <Text className="text-[17px] text-muted-foreground mt-1 leading-snug">
-            A universal Expo starter for iOS, Android, and web. Edit this screen
-            in src/app/index.tsx.
+            A native Expo starter for iOS and Android. Edit this screen in
+            src/app/index.tsx.
           </Text>
         </View>
 

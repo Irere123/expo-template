@@ -2,11 +2,10 @@ import { useDrawer } from "@/components/drawer-content";
 import { Icon } from "@/components/icon";
 import { Image } from "@/components/tw";
 import { formatTimeAgo, type Item, MOCK_ITEMS } from "@/utils/mock-items";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
-import { Color, Link, Stack, useRouter } from "expo-router";
-import { ChevronRight, Menu, Search } from "lucide-react-native";
+import { Link, Stack } from "expo-router";
+import { ChevronRight, Menu, Search, Star } from "lucide-react-native";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, FlatList, Pressable, Text, View } from "react-native";
+import { Alert, FlatList, Pressable, Text, TextInput, View } from "react-native";
 
 type Filter = "all" | "starred";
 
@@ -146,6 +145,9 @@ export default function ItemsScreen() {
         automaticallyAdjustsScrollIndicatorInsets
         automaticallyAdjustKeyboardInsets
         contentContainerClassName="android:pb-safe pb-0"
+        ListHeaderComponent={
+          <SearchHeader search={search} setSearch={setSearch} />
+        }
         renderItem={({ item }) => (
           <ItemRow
             item={item}
@@ -157,89 +159,86 @@ export default function ItemsScreen() {
         ListEmptyComponent={search ? <EmptySearch query={search} /> : null}
       />
 
-      <Stack.SearchBar
-        placeholder="Search"
-        hideWhenScrolling={false}
-        onChangeText={(e) => setSearch(e.nativeEvent.text)}
-        onCancelButtonPress={() => setSearch("")}
+      <Stack.Screen
+        options={{
+          headerLeft: () => <DrawerHeaderButton />,
+          headerRight: () => (
+            <FilterHeaderButton filter={filter} setFilter={setFilter} />
+          ),
+        }}
       />
-
-      <LeftToolbar />
-      <RightToolbar filter={filter} setFilter={setFilter} />
-      <BottomToolbar />
     </>
   );
 }
 
-function LeftToolbar() {
-  const { openDrawer } = useDrawer();
-
-  if (process.env.EXPO_OS === "android") {
-    return (
-      <Stack.Toolbar placement="left" asChild>
-        <Pressable
-          onPress={openDrawer}
-          accessibilityLabel="Open drawer"
-          accessibilityRole="button"
-          className="p-2 -ml-1 active:opacity-60"
-        >
-          <Icon icon={Menu} className="w-6 h-6 text-foreground" />
-        </Pressable>
-      </Stack.Toolbar>
-    );
-  }
+function SearchHeader({
+  search,
+  setSearch,
+}: {
+  search: string;
+  setSearch: (value: string) => void;
+}) {
   return (
-    <Stack.Toolbar placement="left">
-      <Stack.Toolbar.Button icon="list.bullet" onPress={openDrawer} />
-    </Stack.Toolbar>
+    <View className="px-5 pt-3 pb-2">
+      <View className="flex-row items-center gap-2 rounded-xl bg-muted px-3 py-2.5 border-continuous">
+        <Icon icon={Search} className="h-4 w-4 text-muted-foreground" />
+        <TextInput
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search"
+          className="min-h-6 flex-1 p-0 text-[17px] text-foreground"
+          placeholderTextColorClassName="accent-muted-foreground"
+          cursorColorClassName="accent-foreground"
+          selectionColorClassName="accent-foreground"
+          underlineColorAndroidClassName="accent-transparent"
+          returnKeyType="search"
+        />
+      </View>
+    </View>
   );
 }
 
-function RightToolbar({
+function DrawerHeaderButton() {
+  const { openDrawer } = useDrawer();
+
+  return (
+    <Pressable
+      onPress={openDrawer}
+      accessibilityLabel="Open drawer"
+      accessibilityRole="button"
+      className="p-2 -ml-1 active:opacity-60"
+    >
+      <Icon icon={Menu} className="w-6 h-6 text-foreground" />
+    </Pressable>
+  );
+}
+
+function FilterHeaderButton({
   filter,
   setFilter,
 }: {
   filter: Filter;
   setFilter: (filter: Filter) => void;
 }) {
-  return (
-    <Stack.Toolbar placement="right">
-      <Stack.Toolbar.Menu icon="line.horizontal.3.decrease">
-        <Stack.Toolbar.Menu inline>
-          <Stack.Toolbar.MenuAction
-            icon="square.grid.2x2"
-            isOn={filter === "all"}
-            onPress={() => setFilter("all")}
-          >
-            All items
-          </Stack.Toolbar.MenuAction>
-          <Stack.Toolbar.MenuAction
-            icon="star"
-            isOn={filter === "starred"}
-            onPress={() => setFilter("starred")}
-          >
-            Starred
-          </Stack.Toolbar.MenuAction>
-        </Stack.Toolbar.Menu>
-      </Stack.Toolbar.Menu>
-    </Stack.Toolbar>
-  );
-}
-
-function BottomToolbar() {
-  const router = useRouter();
+  const nextFilter = filter === "all" ? "starred" : "all";
 
   return (
-    <Stack.Toolbar placement="bottom">
-      {isLiquidGlassAvailable() && (
-        <Stack.Toolbar.SearchBarSlot separateBackground />
-      )}
-      <Stack.Toolbar.Button
-        tintColor={Color.ios.label}
-        icon="square.and.pencil"
-        onPress={() => router.navigate("/")}
-        separateBackground
+    <Pressable
+      onPress={() => setFilter(nextFilter)}
+      accessibilityLabel={
+        filter === "all" ? "Show starred items" : "Show all items"
+      }
+      accessibilityRole="button"
+      className="p-2 -mr-1 active:opacity-60"
+    >
+      <Icon
+        icon={Star}
+        className={
+          filter === "starred"
+            ? "w-6 h-6 text-yellow-500"
+            : "w-6 h-6 text-foreground"
+        }
       />
-    </Stack.Toolbar>
+    </Pressable>
   );
 }
