@@ -1,8 +1,25 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { FileQuestion, RotateCw, SearchX, WifiOff } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  type DimensionValue,
+  Pressable,
+  ScrollView,
+  type StyleProp,
+  Text,
+  View,
+  type ViewStyle,
+} from "react-native";
+import Animated, {
+  cancelAnimation,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useCSSVariable } from "uniwind";
 
 import { AudioButton } from "@/components/audio-button";
 import { Icon } from "@/components/icon";
@@ -90,25 +107,150 @@ export default function WordScreen() {
   );
 }
 
-function LoadingState({ word }: { word: string }) {
+/** A single shimmering placeholder block. */
+function SkeletonBar({
+  pulseStyle,
+  color,
+  width,
+  height,
+  radius = 8,
+  style,
+}: {
+  pulseStyle: StyleProp<ViewStyle>;
+  color: string;
+  width: DimensionValue;
+  height: number;
+  radius?: number;
+  style?: StyleProp<ViewStyle>;
+}) {
   return (
-    <View className="flex-1 items-center justify-center gap-6 px-8">
-      {word ? (
-        <Text
-          numberOfLines={1}
-          style={fonts.display}
-          className="text-[34px] font-bold tracking-tight text-foreground opacity-20 capitalize"
-        >
-          {word}
-        </Text>
-      ) : null}
-      <View className="items-center gap-3">
-        <ActivityIndicator />
-        <Text className="text-sm tracking-wide text-muted-foreground">
-          Searching…
-        </Text>
+    <Animated.View
+      style={[
+        pulseStyle,
+        { backgroundColor: color, width, height, borderRadius: radius },
+        style,
+      ]}
+    />
+  );
+}
+
+/** Placeholder for one part-of-speech block: a label rule and numbered lines. */
+function SkeletonMeaning({
+  pulseStyle,
+  color,
+  lines,
+  withExample,
+}: {
+  pulseStyle: StyleProp<ViewStyle>;
+  color: string;
+  lines: number;
+  withExample?: boolean;
+}) {
+  return (
+    <View className="mb-8">
+      <View className="flex-row items-center gap-4 mb-4">
+        <SkeletonBar pulseStyle={pulseStyle} color={color} width={60} height={16} radius={6} />
+        <View className="flex-1 h-px bg-border" />
+      </View>
+      <View className="gap-5">
+        {Array.from({ length: lines }, (_, i) => (
+          <View key={`line-${i}`} className="flex-row gap-3">
+            <SkeletonBar
+              pulseStyle={pulseStyle}
+              color={color}
+              width={14}
+              height={14}
+              radius={4}
+              style={{ marginTop: 4 }}
+            />
+            <View className="flex-1 gap-2.5">
+              <SkeletonBar pulseStyle={pulseStyle} color={color} width="100%" height={15} radius={6} />
+              <SkeletonBar
+                pulseStyle={pulseStyle}
+                color={color}
+                width={i % 2 === 0 ? "86%" : "68%"}
+                height={15}
+                radius={6}
+              />
+              {withExample && i === 0 && (
+                <SkeletonBar
+                  pulseStyle={pulseStyle}
+                  color={color}
+                  width="52%"
+                  height={13}
+                  radius={6}
+                  style={{ marginTop: 4 }}
+                />
+              )}
+            </View>
+          </View>
+        ))}
       </View>
     </View>
+  );
+}
+
+/**
+ * Loading state: a skeleton that mirrors the word layout so content slots in
+ * place when it arrives. The searched word is already known, so it shows
+ * immediately in the display font while the meanings shimmer in below.
+ */
+function LoadingState({ word }: { word: string }) {
+  const muted = useCSSVariable("--app-muted") as string;
+  const pulse = useSharedValue(0.5);
+
+  useEffect(() => {
+    pulse.value = withRepeat(
+      withTiming(1, { duration: 850, easing: Easing.inOut(Easing.quad) }),
+      -1,
+      true,
+    );
+    return () => cancelAnimation(pulse);
+  }, [pulse]);
+
+  const pulseStyle = useAnimatedStyle(() => ({ opacity: pulse.value }));
+
+  return (
+    <ScrollView
+      className="flex-1"
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerClassName="android:pb-safe px-5 pb-12"
+      scrollEnabled={false}
+      accessibilityRole="progressbar"
+      accessibilityLabel={word ? `Searching for ${word}` : "Searching"}
+    >
+      {/* Headword (known) + placeholder phonetics and audio */}
+      <View className="pt-3 pb-6">
+        {word ? (
+          <Text
+            numberOfLines={1}
+            style={fonts.display}
+            className="text-[40px] font-bold tracking-tight text-foreground leading-tight capitalize"
+          >
+            {word}
+          </Text>
+        ) : (
+          <SkeletonBar pulseStyle={pulseStyle} color={muted} width="62%" height={40} radius={12} />
+        )}
+
+        <SkeletonBar
+          pulseStyle={pulseStyle}
+          color={muted}
+          width={134}
+          height={16}
+          radius={6}
+          style={{ marginTop: 14 }}
+        />
+
+        <View className="flex-row gap-2.5 mt-5">
+          <SkeletonBar pulseStyle={pulseStyle} color={muted} width={76} height={34} radius={999} />
+          <SkeletonBar pulseStyle={pulseStyle} color={muted} width={76} height={34} radius={999} />
+        </View>
+      </View>
+
+      <SkeletonMeaning pulseStyle={pulseStyle} color={muted} lines={3} withExample />
+      <SkeletonMeaning pulseStyle={pulseStyle} color={muted} lines={2} />
+    </ScrollView>
   );
 }
 
